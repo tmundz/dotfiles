@@ -19,7 +19,7 @@ end
 vim.cmd([[
   augroup packer_user_config
     autocmd!
-    autocmd BufWritePost plugins.lua source <afile> | PackerSync
+    autocmd BufWritePost packer.lua source <afile> | PackerSync
   augroup end
 ]])
 
@@ -49,6 +49,10 @@ return packer.startup(function(use)
     -- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out
     use "lunarvim/darkplus.nvim"
     use "folke/tokyonight.nvim"
+    use { "catppuccin/nvim", as = "catppuccin" }
+    use({
+       'rose-pine/neovim',
+    })
     -- cmp plugins
     use "hrsh7th/nvim-cmp" -- The completion plugin
     use "hrsh7th/cmp-buffer" -- buffer completions
@@ -70,6 +74,7 @@ return packer.startup(function(use)
 
     --telescope
     use("nvim-telescope/telescope-media-files.nvim") -- View media files
+     
     use({ "nvim-telescope/telescope.nvim", branch = "0.1.x" }) -- File/Path finder
     use({ "nvim-telescope/telescope-file-browser.nvim" })
     use({ "nvim-telescope/telescope-fzf-native.nvim",
@@ -81,9 +86,17 @@ return packer.startup(function(use)
     use 'nvim-lua/popup.nvim'
     use 'nvim-lua/plenary.nvim'
 
+    --treesitter
+    use( {'nvim-treesitter/nvim-treesitter', {run = ':TSUpdate'}}) 
+    use('nvim-treesitter/playground')
 
     use 'nvim-tree/nvim-web-devicons'
 
+    use('theprimeagen/harpoon')
+
+    use('mbbill/undotree')
+    
+    use('tpope/vim-fugitive')
 
 
   --DAP
