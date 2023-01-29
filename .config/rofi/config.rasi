@@ -12,7 +12,7 @@ configuration{
     display-drun: "   Apps ";
 }
 
-@theme "themes/gruv.rasi"
+@theme "themes/tokyonight.rasi"
 
 
 element-text, element-icon , mode-switcher {

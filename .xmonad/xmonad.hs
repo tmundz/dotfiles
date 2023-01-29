@@ -55,12 +55,12 @@ myModMask  = mod4Mask
 --
 -- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
 --
-myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
+myWorkspaces    = ["I","II","III","IV","V","VI","VII","VIII","IX"]
 
 -- Border colors for unfocused and focused windows, respectively.
 --
-myNormalBorderColor  = "#dddddd"
-myFocusedBorderColor = "#9400d3"
+myNormalBorderColor  = "#2ac3de"
+myFocusedBorderColor = "#bb9aF7"
 
 ------------------------------------------------------------------------
 -- Key bindings. Add, modify or remove key bindings here.
@@ -78,7 +78,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- launch dmenu
     , ((modm ,              xK_p    ), spawn "rofi -show drun -show-icons")
-
+    
+    -- exit menu
+    , ((modm .|. shiftMask, xK_x    ), spawn "rofi -show power-menu -modi power-menu:rofi-power-menu")
+    -- lock screen
+    , ((modm .|. shiftMask, xK_l    ), spawn "betterlockscreen -l")
     -- launch gmrun
     , ((modm .|. shiftMask, xK_p     ), spawn "gmrun")
 
@@ -266,7 +270,7 @@ myStartupHook = do
 myBar = "xmobar"
 
 -- Custom PP, configure it as you like. It determines what is being written to the bar.
-myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "<" ">" }
+myPP = xmobarPP { ppCurrent = xmobarColor "#7aa2f7" "" . wrap "<" ">" }
 
 -- Key binding to toggle the gap for the bar.
 toggleStrutsKey XConfig {XMonad.modMask = modMask} = (modMask, xK_b)
@@ -300,7 +304,7 @@ defaults = def {
         mouseBindings      = myMouseBindings,
 
       -- hooks, layouts
-        layoutHook         = gaps [(L,8),(R,8), (D,8), (U,8)] $ spacingRaw True (Border 5 5 5 5) True (Border 5 5 5 5) True $ myLayout,
+        layoutHook         = gaps [(L,5),(R,5), (D,5), (U,5)] $ spacingRaw True (Border 5 5 5 5) True (Border 5 5 5 5) True $ myLayout,
         manageHook         = myManageHook,
         handleEventHook    = myEventHook,
         logHook            = myLogHook,

@@ -8,14 +8,18 @@
 Config { 
 
    -- // appearance
-     font 		= "xft:Isoveska :size=11, Symbols Nerd Font:size=11"
-   , bgColor 		= "black"
-   , fgColor 		= "white"
+     -- font 		="xft:Noto Sans JP Black:size=12:antialias=true, xft:Isoveska :size=11, Symbols Nerd Font:size=11"
+     font           ="xft:Isoveska :size=11, Symbols Nerd Font:size=11"
+   , bgColor 		= "#1a1b26"
+   , fgColor 		= "#bb9af7"
    , borderColor 	= "#ffffff"
    , position 		= TopSize C 100 30
    , textOffset		= -1
    , iconOffset		= -8
 
+
+   -- colors
+   -- neon purple = #b026ff
 
    -- // border
    -- options: TopB, TopBM, BottomB, BottomBM, FullB, FullBM or NoBorder 
@@ -26,7 +30,7 @@ Config {
    -- // layout
    , sepChar 		= "$"   -- delineator between plugin names and straight text
    , alignSep 		= "}{"  -- separator between left-right alignment
-   , template 		= "  $UnsafeStdinReader$ }[ <fc=#ababab>$uptime$ | $date$</fc> ]{  $battery$ |<fc=#909090> $cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc>   "
+   , template 		= "  $UnsafeStdinReader$ }[ <fc=#bb9af7>$uptime$ | $date$</fc> ]{  $battery$ |<fc=#bb9af7> $cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc>   "
 
 
    -- // general behavior
@@ -47,12 +51,12 @@ Config {
         , Run UnsafeStdinReader
 
           -- network activity monitor (dynamic interface resolution)
-        , Run DynNetwork     [ "--template" , "<fc=#0192ff>\xf093</fc> <tx>kB/s / <fc=#0192ff>\xf019</fc> <rx>kB/s"
+        , Run DynNetwork     [ "--template" , "<fc=#2ac3de>\xf093</fc> <tx>kB/s / <fc=#2ac3de>\xf019</fc> <rx>kB/s"
                              , "--Low"      , "5000000"     -- units: B/s
                              , "--High"     , "20000000"    -- units: B/s
-                             , "--low"      , "#1bc800"
-                             , "--normal"   , "darkorange" 
-                             , "--high"     , "darkred" 
+                             , "--low"      , "#f7768e"
+                             , "--normal"   , "#9ece6a" 
+                             , "--high"     , "#ff9e64" 
                              ] 20
 
           -- mpris2 activity monitor for spotify
@@ -61,19 +65,19 @@ Config {
                                ] 10
 
           -- cpu activity monitor
-        , Run Cpu            [ "--template" , "<fc=#3cfb05>\xf108</fc> <total>%"
+        , Run Cpu            [ "--template" , "<fc=#bb9af7>\xf108</fc> <total>%"
                              , "--Low"      , "50"         -- units: %
                              , "--High"     , "85"         -- units: %
-                             , "--low"      , "#1bc800"
-                             , "--normal"   , "darkorange"
-                             , "--high"     , "darkred"
+                             , "--low"      , "#2ac3de"
+                             , "--normal"   , "#e0af6a"
+                             , "--high"     , "#f7768e"
                              ] 50
 
           -- cpu core temperature monitor
         , Run CoreTemp       [ "--template" , "<core0>°C"
         --                      -- , "--Low"      , "60"        -- units: °C
         --                      -- , "--High"     , "80"        -- units: °C
-        --                      -- , "--low"      , "#1bc800"
+        --                      -- , "--low"      , "#2ac3de"
         --                      -- , "--normal"   , "darkorange"
         --                      -- , "--high"     , "darkred"
                              ] 50
@@ -81,25 +85,25 @@ Config {
         -- , Run Com "sh" ["-c", "sensors | grep -m 1 temp1 | sed 's/temp1:        +//' | sed 's/[ \t]*$//'" ] "coretemp" 50
                           
           -- memory usage monitor
-        , Run Memory         [ "--template" ,"<fc=#f44336>\xf2db</fc> <usedratio>%"
+        , Run Memory         [ "--template" ,"<fc=#bb9af7>\xf2db</fc> <usedratio>%"
                              , "--Low"      , "60"        -- units: %
                              , "--High"     , "90"        -- units: %
-                             , "--low"      , "#1bc800"
+                             , "--low"      , "#2ac3de"
                              , "--normal"   , "darkorange"
                              , "--high"     , "darkred"
                              ] 50
 
           -- disk size monitor
-        , Run DiskU [("/", "<fc=#f7a60e>\xf7c9</fc> <fc=#9f9f9f><used>B / <size>B</fc>")] 
+        , Run DiskU [("/", "<fc=#bb9af7>\xf7c9</fc> <fc=#2ac3de><used>B / <size>B</fc>")] 
                     [] 50
 
           -- battery monitor (<timeleft> in discharging status for battery time left)
         , Run Battery        [ "--template" , "<leftbar> <acstatus>"
                              , "--Low"      , "15"        -- units: %
                              , "--High"     , "40"        -- units: %
-                             , "--low"      , "darkred"
-                             , "--normal"   , "darkorange"
-                             , "--high"     , "#1bc800"
+                             , "--low"      , "#f7768e"
+                             , "--normal"   , "#e0af68"
+                             , "--high"     , "#9ece6a"
                              , "-f", "\xf244\xf243\xf243\xf243\xf242\xf242\xf241\xf241\xf241\xf240" -- horizontal
                              -- , "-f", "\xf579\xf57a\xf57b\xf57c\xf57d\xf57e\xf57f\xf580\xf581\xf578" -- vertical
                              , "-W", "0"
