@@ -26,7 +26,10 @@ zstyle ':vcs_info:*' enable git
 setopt prompt_subst
 
 #prompts
-PROMPT='%F{magenta}%n%F{blue}@%F{magenta}%m:%F{cyan}%~%f$vcs_info_msg_0_ # %f'
+#prompts
+PROMPT='%F{magenta}%n%F{blue}@%F{magenta}%m:%F{cyan}%~%f$vcs_info_msg_0_%F{magenta}
+> %f'
+
 
 
 #export JAVA_HOME=$HOME/jdk15 example for dev 
