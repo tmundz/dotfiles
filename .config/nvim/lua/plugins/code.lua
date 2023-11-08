@@ -78,7 +78,6 @@ return {
     }
   },
 
-
   config = function(_, opts)
     -- use gz mappings instead of s to prevent conflict with leap
     require("mini.surround").setup(opts)
@@ -86,6 +85,7 @@ return {
   }, 
 
   { "JoosepAlviste/nvim-ts-context-commentstring", lazy = true },
+   
 
   {
     "echasnovski/mini.comment",
