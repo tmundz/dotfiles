@@ -45,7 +45,7 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("~/.config/awesome/theme/default/custom.lua")
+beautiful.init("~/.config/awesome/theme/default/tokyonight.lua")
 -- This is used later as the default terminal and editor to run.
 terminal = "kitty"
 editor = os.getenv("EDITOR") or "nano"
@@ -281,11 +281,11 @@ globalkeys = gears.table.join(
         {description = "go back", group = "client"}),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
+    awful.key({ modkey, "Shift"           }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey, "Shift"   }, "x", awesome.quit,
+    awful.key({ modkey, "Shift"   }, "q", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
 
     awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
@@ -337,7 +337,7 @@ globalkeys = gears.table.join(
        awful.util.spawn("rofi -show drun -show-icons") end,
     		{description = "rofi", group = "launcher"}),
 
-    awful.key({ modkey, "Shift" }, "q", function()
+    awful.key({ modkey, "Shift" }, "x", function()
 		logout_popup.launch() end, 
 		{description = "Show logout screen", group = "custom"}),
 

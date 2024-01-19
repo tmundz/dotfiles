@@ -4,16 +4,16 @@
 -- This file is automatically loaded by lazyvim.plugins.config
 local opts = { noremap = true, silent = true }
 function map(mode, key, cmd, opts)
-  vim.keymap.set(mode, key, cmd, opts)
-
+    vim.keymap.set(mode, key, cmd, opts)
 end
+
 -- local function map(mode, lhs, rhs, opts)
-  --local keys = require("lazy.core.handler").handlers.keys
-  ---@cast keys LazyKeysHandler
-  -- do not create the keymap if a lazy keys handler exists
-  --if not keys.active[keys.parse({ lhs, mode = mode }).id] then
-    --yvim.keymap.set(mode, lhs, rhs, opts)
-  --end
+--local keys = require("lazy.core.handler").handlers.keys
+---@cast keys LazyKeysHandler
+-- do not create the keymap if a lazy keys handler exists
+--if not keys.active[keys.parse({ lhs, mode = mode }).id] then
+--yvim.keymap.set(mode, lhs, rhs, opts)
+--end
 --end
 
 --better exit
@@ -47,15 +47,15 @@ map("i", "<A-k>", "<Esc>:m .-2<cr>==gi", { desc = "Move up" })
 
 -- buffers
 -- if Util.has("nvim-bufferline.lua") then
-  map("n", "<S-h>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
-  map("n", "<S-l>", "<cmd>BufferLineCycleNext<cr>", { desc = "Next buffer" })
-  map("n", "[b", "<cmd>BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
-  map("n", "]b", "<cmd>BufferLineCycleNext<cr>", { desc = "Next buffer" })
+map("n", "<S-h>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
+map("n", "<S-l>", "<cmd>BufferLineCycleNext<cr>", { desc = "Next buffer" })
+map("n", "[b", "<cmd>BufferLineCyclePrev<cr>", { desc = "Prev buffer" })
+map("n", "]b", "<cmd>BufferLineCycleNext<cr>", { desc = "Next buffer" })
 --else
-  map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
-  map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer" })
-  map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
-  map("n", "]b", "<cmd>bnext<cr>", { desc = "Next buffer" })
+map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
+map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer" })
+map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
+map("n", "]b", "<cmd>bnext<cr>", { desc = "Next buffer" })
 --end
 map("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 map("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
@@ -66,10 +66,10 @@ map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsea
 -- Clear search, diff update and redraw
 -- taken from runtime/lua/_editor.lua
 map(
-  "n",
-  "<leader>ur",
-  "<Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>",
-  { desc = "Redraw / clear hlsearch / diff update" }
+    "n",
+    "<leader>ur",
+    "<Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>",
+    { desc = "Redraw / clear hlsearch / diff update" }
 )
 
 map("n", "gw", "*N")
@@ -124,13 +124,13 @@ map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
 
 -- highlights under cursor
 if vim.fn.has("nvim-0.9.0") == 1 then
-  map("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
+    map("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
 end
 
 -- floating terminal
 -- map("n", "<leader>ft", function() Util.float_term(nil, { cwd = Util.get_root() }) end, { desc = "Terminal (root dir)" })
 -- map("n", "<leader>fT", function() Util.float_term() end, { desc = "Terminal (cwd)" })
-map("t", "<esc><esc>", "<c-\\><c-n>", {desc = "Enter Normal Mode"})
+map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Enter Normal Mode" })
 
 -- windows
 map("n", "<leader>ww", "<C-W>p", { desc = "Other window" })
@@ -144,7 +144,6 @@ map("n", "<leader>|", "<C-W>v", { desc = "Split window right" })
 map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
 map("n", "<leader><tab>f", "<cmd>tabfirst<cr>", { desc = "First Tab" })
 map("n", "<leader><tab><tab>", "<cmd>tabnew<cr>", { desc = "New Tab" })
-map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
+map("n", "<leader><tab>l", "<cmd>tabnext<cr>", { desc = "Next Tab" })
 map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
-

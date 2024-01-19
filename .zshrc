@@ -30,7 +30,9 @@ setopt prompt_subst
 PROMPT='%F{magenta}%n%F{blue}@%F{magenta}%m:%F{cyan}%~%f$vcs_info_msg_0_%F{magenta}
 > %f'
 
-
-
+bindkey "^[[3~" delete-char
+neofetch
 #export JAVA_HOME=$HOME/jdk15 example for dev 
 # End of lines configured by zsh-newuser-install
+source $HOME/.cargo/env
+

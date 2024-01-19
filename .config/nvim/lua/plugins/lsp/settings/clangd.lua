@@ -1,7 +1,6 @@
-
 return {
     capabilities = {
-    offsetEncoding = "utf-8",
+        offsetEncoding = "utf-8",
     },
-    filetypes = { "c", "cpp" ,"cc", "cxx", "h"},
+    filetypes = { "c", "cpp", "cc", "cxx", "h" },
 }
