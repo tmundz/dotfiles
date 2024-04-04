@@ -1,2 +1,5 @@
-startx
-#Hyprland
+#startx
+
+if [[ -z $TMUX ]]; then
+  Hyprland
+fi

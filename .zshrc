@@ -27,9 +27,11 @@ setopt prompt_subst
 
 #prompts
 #prompts
-PROMPT='%F{magenta}%n%F{blue}@%F{magenta}%m:%F{cyan}%~%f$vcs_info_msg_0_%F{magenta}
-> %f'
+#PROMPT='%F{magenta}%n%F{blue}@%F{magenta}%m:%F{cyan}%~%f$vcs_info_msg_0_%F{magenta}
+#> %f'
 
+PROMPT='%F{magenta}%~%f$vcs_info_msg_0_%F{cyan}
+> %f'
 bindkey "^[[3~" delete-char
 neofetch
 #export JAVA_HOME=$HOME/jdk15 example for dev 
