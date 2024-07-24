@@ -34,6 +34,7 @@ local plugins = {
         "prettierd",
         "biome",
         "stylua",
+        "zls",
         --lint
 
         -- Debuggers
@@ -49,6 +50,7 @@ local plugins = {
       require "custom.configs.lspconfig"
     end,
   },
+  { "nvim-neotest/nvim-nio" },
   {
     "lvimuser/lsp-inlayhints.nvim",
     opts = {
