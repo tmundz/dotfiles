@@ -21,13 +21,13 @@ else
 fi
 
 echo "Installing Dev tools"
-sudo pacman -S zsh go delve docker gdb make cmake gcc man-db man-pages python gopls zig neovim
+sudo pacman -S zsh udiskie go delve docker gdb make cmake gcc man-db man-pages python gopls zig neovim
 
 echo "Installing Hyprland"
 paru -S grim mako kitty hyprland rofi-wayland fastfetch mpv wlogout hypridle hyprlock hyprpicker xdg-desktop-portal-hyprland hyprcursor wireplumber qt5-wayland qt6-wayland waybar copyq wl-clipboard hyprpaper swaybg kde-polkit-agent
 
 echo "Installing software"
-paru -S openssh rofi-power-menu feh rofi-wifi-menu docker candy-icons cava ranger gimp kdenlive krita brave-bin firefox uwufetch fzf qbittorrent ripgrep lazygit thunar zathura obs-studio
+paru -S ntfs-3g keepassxc openssh rofi-power-menu feh rofi-wifi-menu docker candy-icons cava ranger gimp kdenlive krita brave-bin firefox uwufetch fzf qbittorrent ripgrep lazygit thunar zathura obs-studio
 
 
 echo "Installing Fonts"
