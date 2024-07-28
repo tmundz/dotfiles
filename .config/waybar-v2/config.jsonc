@@ -1,0 +1,137 @@
+{
+    "layer": "top",
+    "position": "top",
+    "mod": "dock",
+    "font-weight": "normal",
+    "gtk-layer-shell": "true",
+    "exclusive": true,
+    "passtrough": false,
+    "height": 10,
+    "modules-left": [
+        "custom/arch",
+        "cpu",
+        "temperature",
+        "memory",
+        "hyprland/window"
+    ],
+    "modules-center": ["hyprland/workspaces"],
+    "modules-right": [
+        "network",
+        "battery",
+        "pulseaudio",
+        "clock",
+        "tray",
+        "custom/powermenu"
+    ],
+    "custom/arch": {
+        "format":"  ",
+      "tooltip": false,
+      "on-click": "exec ~/.config/rofi/launchers/type-7/launcher.sh"
+    },
+    "custom/powermenu": {
+        "format":" ⏻ ",
+      "tooltip": false,
+      "on-click": ""
+    },
+    "cpu": {
+        "format": "{usage}% ",
+        "tooltip": false
+    },
+    "temperature": {
+        // "thermal-zone": 2,
+        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        "critical-threshold": 80,
+        // "format-critical": "{temperatureC}°C {icon}",
+        "format": "{temperatureC}°C {icon}",
+        "format-icons": ["", "", ""]
+    },
+    "memory": {
+        "format": "{}% "
+    },
+    "temperature": {
+        // "thermal-zone": 2,
+        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        "critical-threshold": 80,
+        // "format-critical": "{temperatureC}°C {icon}",
+        "format": "{temperatureC}°C {icon}",
+        "format-icons": ["", "", ""]
+    },
+    "battery": {
+      "bat": "BAT0",
+      "format-charging": "󰚥",
+      "adapter": "ADP0",
+      "interval": 1,
+      "states": {
+          "warning": 30,
+          "critical": 15
+      },
+      "max-length": 20,
+      "format": "{icon}",
+      "format-warning": "{icon}",
+      "format-critical": "{icon}",
+
+      "format-alt": "{icon} {time}",
+      "format-full": "   ",
+      "format-icons": ["   ", "   ", "   ", "   ", "   "]
+    },
+"hyprland/workspaces": {
+        "disable-scroll": false,
+        "all-outputs": true,
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+		"on-scroll-down": "hyprctl dispatch workspace e-1",
+        "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+             "1":  "一",
+             "2": "二",
+             "3": "三",
+             "4": "四",
+             "5": "五",
+             "6": "六",
+             "7": "七",
+             "8": "八",
+             "9": "九",
+             "10": "十",
+             "urgent": "",
+             "focused": "",
+             "default": ""
+         }
+     },
+    "tray": {
+        "icon-size": 13,
+        "tooltip": false,
+        "spacing": 10
+    },
+    /*"custom/spotify": {
+        "exec": "/usr/bin/python3 ~/.config/waybar/modules/spotify.py --player spotify",
+        "format": " {}",
+        "return-type": "json",
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous"
+    },*/
+"pulseaudio": {
+        "format": "{icon}",
+        "format-muted": " 󰖁 ",
+        "format-icons": {
+            "default": ["  ", "  ", "  "]
+        },
+        "on-click": "pavucontrol &"
+    },
+
+"network": {
+        // "interface": "wlp2*", // (Optional) To force the use of this interface
+        "format-wifi": "{essid} ({signalStrength}%) ",
+        "format-ethernet": "{ipaddr}/{cidr} ",
+        "tooltip-format": "{ifname} via {gwaddr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected ⚠",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+    "clock": {
+        "format-alt": "{:%Y-%m-%d}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+    },
+}
+
