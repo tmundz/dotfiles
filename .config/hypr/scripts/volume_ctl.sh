@@ -21,7 +21,7 @@ function send_notification {
   iconSound="audio-volume-high"
   iconMuted="audio-volume-muted"
   if is_mute ; then
-    dunstify -i $iconMuted -r 2593 -u normal "Muted"
+    notify-send -i $iconMuted -r 2593 -u normal "Muted"
   else
     volume=$(get_volume)
     # Make the bar with the special character ─ (it's not dash -)
@@ -29,7 +29,7 @@ function send_notification {
     bar=$(seq --separator="─" 0 "$(((volume - 1) / 4))" | sed 's/[0-9]//g')
     space=$(seq --separator=" " 0 "$(((100 - volume) / 4))" | sed 's/[0-9]//g')
     # Send the notification
-    dunstify -i $iconSound -r 2593 -u normal "|$bar$space| $volume%"
+    notify-send -i $iconSound -r 2593 -u normal "|$bar$space| $volume%"
   fi
 }
 

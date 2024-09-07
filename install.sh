@@ -21,17 +21,16 @@ else
 fi
 
 echo "Installing Dev tools"
-sudo pacman -S zsh udiskie go delve docker gdb make cmake gcc man-db man-pages python gopls zig neovim
+sudo pacman -S brightnessctl zsh udiskie go delve gdb make cmake gcc man-db man-pages python gopls zig neovim
 
 echo "Installing Hyprland"
-paru -S grim mako kitty hyprland rofi-wayland fastfetch mpv wlogout hypridle hyprlock hyprpicker xdg-desktop-portal-hyprland hyprcursor wireplumber qt5-wayland qt6-wayland waybar copyq wl-clipboard hyprpaper swaybg kde-polkit-agent
+paru -S bat mullvad-vpn grim slurp mako kitty hyprland rofi-wayland fastfetch mpv wlogout hypridle hyprlock hyprpicker xdg-desktop-portal-hyprland hyprcursor wireplumber qt5-wayland qt6-wayland waybar copyq wl-clipboard hyprpaper swaybg kde-polkit-agent
 
 echo "Installing software"
-paru -S ntfs-3g keepassxc openssh rofi-power-menu feh rofi-wifi-menu docker candy-icons cava ranger gimp kdenlive krita brave-bin firefox uwufetch fzf qbittorrent ripgrep lazygit thunar zathura obs-studio
-
+paru -S ntfs-3g keepassxc openssh rofi-power-menu feh rofi-wifi-menu candy-icons cava ranger gimp kdenlive krita brave-bin firefox uwufetch fzf qbittorrent ripgrep lazygit thunar zathura obs-studio
 
 echo "Installing Fonts"
-paru -S adobe-source-code-pro-fonts cantarell-fonts fontconfig fonts-cjk gnu-free-fonts libfontenc libxfont2 ttf-font-awesome ttf-nerd-fonts-symbols ttf-nerd-fonts-symbols-common ttf-nerd-fonts-symbols-mono ttf-profont-nerd xorg-fonts-encodings xorg-mkfontscale ttf-hack
+paru -S nerd-fonts adobe-source-code-pro-fonts cantarell-fonts fontconfig fonts-cjk gnu-free-fonts libfontenc libxfont2 ttf-font-awesome ttf-nerd-fonts-symbols ttf-nerd-fonts-symbols-common ttf-nerd-fonts-symbols-mono ttf-profont-nerd xorg-fonts-encodings xorg-mkfontscale ttf-hack
 
 echo "Installing KVM"
 sudo pacman -S qemu-full virt-manager virt-viewer dnsmasq bridge-utils libguestfs ebtables vde2 openbsd-netcat
@@ -59,10 +58,8 @@ sudo systemctl start sshd
 
 sudo systemctl enable libvirtd.service
 sudo systemctl start libvirtd.service
-sudo systemctl start docker.service
-sudo systemctl enable docker.service
 
-sudo usermod -aG docker,video,ftp,log,uucp,tty,utmp,kvm,input,audio,storage $USER
+sudo usermod -aG video,ftp,log,uucp,tty,utmp,kvm,input,audio,storage $USER
 sudo usermod -s /bin/zsh $USER
 
 echo "Git global UserName type Leave blank to skip"
@@ -74,7 +71,7 @@ if [[ -n ${username} ]]; then
   git config --global user.email ${email}
 fi
 
-
+bat --theme="Catppuccin Mocha" ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme
 echo "GO TO /etc/libvirt/libvirtd.conf and uncomment "
 echo 'unix_sock_group = "libvirt" unix_sock_rw_perms = "0777"'
 echo "sudo usermod -aG libvirt $USER run this"
