@@ -52,6 +52,12 @@ cp -r ~/dotfiles/.config/cava ~/.config/
 cp -r ~/dotfiles/.config/lazygit ~/.config/
 cp -r ~/dotfiles/.config/copyq ~/.config/
 
+echo "Installing the needed images"
+git clone --depth=1 https://github.com/adi1090x/rofi.git
+cd rofi
+chmod +x setup.sh
+cd ~
+
 echo "Enabling services"
 sudo systemctl enable sshd
 sudo systemctl start sshd
@@ -76,3 +82,6 @@ echo "GO TO /etc/libvirt/libvirtd.conf and uncomment "
 echo 'unix_sock_group = "libvirt" unix_sock_rw_perms = "0777"'
 echo "sudo usermod -aG libvirt $USER run this"
 
+
+# will eventually connect to my prox mox server but I do eventually want to re vamp this
+# fix thjis up 
