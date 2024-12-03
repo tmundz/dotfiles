@@ -1,108 +1,115 @@
-
 @import "mocha.css"; /* Importing the color variables */
 
 /* Base Font Settings */
 * {
-    font-family: "Hack Nerd Font", "FontAwesome", "Hack", monospace;
-    font-size: 14px;
-    color: @text; /* Default Text Color */
+  font-family: "Hack Nerd Font", "FontAwesome", "Hack", monospace;
+  font-size: 14px;
+  color: @text; /* Default Text Color */
 }
 
 /* Bar Background and General Module Styling */
 window {
-    background-color: @base; /* Dark background */
-    border-bottom: 2px solid @lavender; /* Bottom border */
-    color: @text;
-    padding: 0 10px; /* Adds padding around the modules */
+  background-color: @base; /* Dark background */
+  border-bottom: 2px solid @pink; /* Bottom border */
+  color: @text;
+  padding: 0 10px; /* Adds padding around the modules */
 }
 
 /* Modules Style */
-#cpu, #memory, #disk, #pulseaudio, #battery, #network, #vpn, #clock, #tray, #temperature {
-    background-color: @base;
-    color: @lavender; /* Light lavender text color */
-    border-radius: 5px;
-    padding: 6px;
-    margin: 4px; /* Space between elements */
-    font-family: "Hack Nerd Font"; /* Use Hack Nerd Font */
+#cpu,
+#memory,
+#disk,
+#pulseaudio,
+#battery,
+#network,
+#vpn,
+#clock,
+#tray,
+#temperature {
+  background-color: @base;
+  color: @pink; /* Light pink text color */
+  border-radius: 5px;
+  padding: 6px;
+  margin: 4px; /* Space between elements */
+  font-family: "Hack Nerd Font"; /* Use Hack Nerd Font */
 }
 
 /* Workspaces Styling */
 #hyprland-workspaces button {
-    background-color: @surface0;
-    color: @lavender;
-    margin: 2px;
-    padding: 5px;
-    border-radius: 4px;
-    font-family: "Hack Nerd Font";
+  background-color: @surface0;
+  color: @pink;
+  margin: 2px;
+  padding: 5px;
+  border-radius: 4px;
+  font-family: "Hack Nerd Font";
 }
 
 #hyprland-workspaces button.focused {
-    background-color: @lavender;
-    color: @base; /* Dark text on light background */
+  background-color: @pink;
+  color: @base; /* Dark text on light background */
 }
 
 #hyprland-workspaces button.urgent {
-    background-color: @red;
-    color: @text;
+  background-color: @red;
+  color: @text;
 }
 
 /* Battery Module */
 #battery {
-    color: @green; /* Default battery color */
+  color: @green; /* Default battery color */
 }
 
 #battery.good {
-    color: @mauve; /* Lavender for good battery */
+  color: @mauve; /* pink for good battery */
 }
 
 #battery.warning {
-    color: @red; /* Red for warning */
+  color: @red; /* Red for warning */
 }
 
 #battery.charging {
-    color: @green; /* Green for charging */
+  color: @green; /* Green for charging */
 }
 
 #battery.critical {
-    color: @red; /* Red for critical */
+  color: @red; /* Red for critical */
 }
 
 /* Tray Icons */
 #tray {
-    /* Customize if needed */
+  /* Customize if needed */
 }
 
 /* Network Module */
 #network {
-    color: @blue; /* Blue for network */
+  color: @pink; /* pink for network */
 }
 
 /* Sound Module */
 #pulseaudio {
-    color: @peach; /* Orange for sound */
+  color: @peach; /* Orange for sound */
 }
 
 /* Clock Styling */
 #clock {
-    color: @lavender; /* Lavender for clock */
-    font-family: "Hack Nerd Font", "FontAwesome";
+  color: @pink; /* pink for clock */
+  font-family: "Hack Nerd Font", "FontAwesome";
 }
 
 /* Custom Arch Logo */
 #custom-arch {
-    color: @lavender; /* Light lavender */
-    font-size: 16px; /* Slightly larger for logo */
+  color: @pink; /* Light pink */
+  font-size: 16px; /* Slightly larger for logo */
 }
 
 /* Custom Power Menu */
 #custom-powermenu {
-    color: @red; /* Red for power off */
-    font-size: 16px;
+  color: @pink; /* pink for power off */
+  font-size: 16px;
 }
 
 /* Tooltip for Clock */
 #clock:hover {
-    background-color: @surface1;
-    color: @subtext1;
+  background-color: @surface1;
+  color: @subtext1;
 }
-
