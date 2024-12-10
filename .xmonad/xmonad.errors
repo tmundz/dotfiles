@@ -1,8 +1,0 @@
-$ ghc --make xmonad.hs -i -ilib -fforce-recomp -main-is main -dynamic -v0 -outputdir /home/mundy/.xmonad/build-x86_64-linux -o /home/mundy/.xmonad/xmonad-x86_64-linux
-
-xmonad.hs:265:1: warning: [-Wtabs]
-    Tab character found here, and in one further location.
-    Please use spaces instead.
-    |
-265 |         spawnOnce "~/.fehbg"
-    | ^^^^^^^^

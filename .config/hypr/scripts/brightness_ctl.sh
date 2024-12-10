@@ -13,13 +13,13 @@ BRIGHTNESS_STEP=10%
 if [[ $1 == "up" ]]; then
     # Increase the brightness by percentage
     brightnessctl set +$BRIGHTNESS_STEP
-    echo "Brightness increased by $BRIGHTNESS_STEP"
+    notify-send "Brightness increased by $BRIGHTNESS_STEP"
 elif [[ $1 == "down" ]]; then
     # Decrease the brightness by percentage
     brightnessctl set $BRIGHTNESS_STEP-
-    echo "Brightness decreased by $BRIGHTNESS_STEP"
+    notify-send "Brightness decreased by $BRIGHTNESS_STEP"
 else
-    echo "Invalid argument. Use 'up' or 'down'."
+    notify-send "Invalid argument. Use 'up' or 'down'."
     exit 1
 fi
 
