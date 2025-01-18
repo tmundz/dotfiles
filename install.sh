@@ -1,6 +1,6 @@
 #/bin/bash
 
-pacman -Syu
+sudo pacman -Syu
 
 # create a check somehow
 if command cargo -v > /dev/null 2>&1; then 
@@ -21,7 +21,7 @@ else
 fi
 
 echo "Installing Dev tools"
-pacman -S brightnessctl zsh udiskie go delve gdb make cmake gcc man-db man-pages python gopls zig neovim
+sudo pacman -S brightnessctl zsh udiskie go delve gdb make cmake gcc man-db man-pages python gopls zig neovim
 
 echo "Installing Hyprland"
 paru -S pcmanfm docker mullvad-vpn grim slurp mako kitty hyprland rofi-wayland fastfetch mpv wlogout hypridle hyprlock hyprpicker xdg-desktop-portal-hyprland hyprcursor wireplumber qt5-wayland qt6-wayland waybar copyq wl-clipboard hyprpaper swaybg kde-polkit-agent
@@ -33,7 +33,7 @@ echo "Installing Fonts"
 paru -S nerd-fonts adobe-source-code-pro-fonts cantarell-fonts fontconfig fonts-cjk gnu-free-fonts libfontenc libxfont2 ttf-font-awesome ttf-nerd-fonts-symbols ttf-nerd-fonts-symbols-common ttf-nerd-fonts-symbols-mono ttf-profont-nerd xorg-fonts-encodings xorg-mkfontscale ttf-hack
 
 echo "Installing KVM"
-pacman -S qemu-full virt-manager virt-viewer dnsmasq bridge-utils libguestfs ebtables vde2 openbsd-netcat
+sudo pacman -S qemu-full virt-manager virt-viewer dnsmasq bridge-utils libguestfs ebtables vde2 openbsd-netcat
 
 echo "Installing the needed images"
 cd ~
@@ -68,20 +68,20 @@ cp -r ~/dotfiles/.themes/ ~/
 
 
 echo "Enabling services"
-systemctl enable sshd
-systemctl start sshd
+sudo systemctl enable sshd
+sudo systemctl start sshd
 
-systemctl start docker                                        
-systemctl enable docker
+sudo systemctl start docker                                        
+sudo systemctl enable docker
 
-systemctl enable libvirtd.service
-systemctl start libvirtd.service
+sudo systemctl enable libvirtd.service
+sudo systemctl start libvirtd.service
 
 usermod -aG video,ftp,log,uucp,tty,utmp,kvm,input,audio,storage $USER
 usermod -s /bin/zsh $USER
 
-virsh net-start default
-virsh net-autostart default
+sudo virsh net-start default
+sudo virsh net-autostart default
 
 usermod -aG docker $USER
 
