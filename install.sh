@@ -1,6 +1,6 @@
 #/bin/bash
 
-sudo pacman -Syu
+pacman -Syu
 
 # create a check somehow
 if command cargo -v > /dev/null 2>&1; then 
@@ -21,7 +21,7 @@ else
 fi
 
 echo "Installing Dev tools"
-sudo pacman -S brightnessctl zsh udiskie go delve gdb make cmake gcc man-db man-pages python gopls zig neovim
+pacman -S brightnessctl zsh udiskie go delve gdb make cmake gcc man-db man-pages python gopls zig neovim
 
 echo "Installing Hyprland"
 paru -S pcmanfm docker mullvad-vpn grim slurp mako kitty hyprland rofi-wayland fastfetch mpv wlogout hypridle hyprlock hyprpicker xdg-desktop-portal-hyprland hyprcursor wireplumber qt5-wayland qt6-wayland waybar copyq wl-clipboard hyprpaper swaybg kde-polkit-agent
@@ -33,7 +33,7 @@ echo "Installing Fonts"
 paru -S nerd-fonts adobe-source-code-pro-fonts cantarell-fonts fontconfig fonts-cjk gnu-free-fonts libfontenc libxfont2 ttf-font-awesome ttf-nerd-fonts-symbols ttf-nerd-fonts-symbols-common ttf-nerd-fonts-symbols-mono ttf-profont-nerd xorg-fonts-encodings xorg-mkfontscale ttf-hack
 
 echo "Installing KVM"
-sudo pacman -S qemu-full virt-manager virt-viewer dnsmasq bridge-utils libguestfs ebtables vde2 openbsd-netcat
+pacman -S qemu-full virt-manager virt-viewer dnsmasq bridge-utils libguestfs ebtables vde2 openbsd-netcat
 
 echo "Installing the needed images"
 cd ~
@@ -68,22 +68,22 @@ cp -r ~/dotfiles/.themes/ ~/
 
 
 echo "Enabling services"
-sudo systemctl enable sshd
-sudo systemctl start sshd
+systemctl enable sshd
+systemctl start sshd
 
-sudo systemctl start docker                                        
-sudo systemctl enable docker
+systemctl start docker                                        
+systemctl enable docker
 
-sudo systemctl enable libvirtd.service
-sudo systemctl start libvirtd.service
+systemctl enable libvirtd.service
+systemctl start libvirtd.service
 
-sudo usermod -aG video,ftp,log,uucp,tty,utmp,kvm,input,audio,storage $USER
-sudo usermod -s /bin/zsh $USER
+usermod -aG video,ftp,log,uucp,tty,utmp,kvm,input,audio,storage $USER
+usermod -s /bin/zsh $USER
 
 virsh net-start default
 virsh net-autostart default
 
-sudo usermod -aG docker $USER
+usermod -aG docker $USER
 
 echo "Git global UserName type Leave blank to skip"
 read username
@@ -95,7 +95,7 @@ if [[ -n ${username} ]]; then
 fi
 
 echo "Pulling docker mobsf"
-sudo docker pull opensecurity/mobile-security-framework-mobsf:latest
+docker pull opensecurity/mobile-security-framework-mobsf:latest
 
 echo "[+] to run mobfs"
 echo "[+] docker run -it --rm -p 8000:8000 opensecurity/mobile-security-framework-mobsf:latest"
@@ -104,7 +104,7 @@ echo "[+] docker run -it --rm -p 8000:8000 opensecurity/mobile-security-framewor
 echo "[+] GO TO /etc/libvirt/libvirtd.conf and uncomment "
 echo '[+] unix_sock_group = "libvirt" unix_sock_rw_perms = "0777"'
 echo "sudo usermod -aG libvirt $USER run this"
-sudo usermod -aG libvirt $USER
+usermod -aG libvirt $USER
 
 # will eventually connect to my prox mox server but I do eventually want to re vamp this
 # fix thjis up 
