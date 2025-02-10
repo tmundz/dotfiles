@@ -17,6 +17,14 @@ alias grep='grep --color=auto'
 alias source-zsh='source ~/.zshrc'
 
 
+vm_mount() {
+    if ! mountpoint -q ~/vm_box; then
+        sshfs user@vm-hostname:/ ~/athena
+    fi
+}
+
+alias ssh-vm="vm_mount && ssh -Y user@vm-hostname"
+
 #GIT PROMPTS
 autoload -Uz vcs_info  # Where do these come from? What else is there?
 precmd_vcs_info() { vcs_info }

@@ -24,10 +24,10 @@ echo "Installing Dev tools"
 sudo pacman -S brightnessctl zsh udiskie go delve gdb make cmake gcc man-db man-pages python gopls zig neovim
 
 echo "Installing Hyprland"
-paru -S pcmanfm docker mullvad-vpn grim slurp mako kitty hyprland rofi-wayland fastfetch mpv wlogout hypridle hyprlock hyprpicker xdg-desktop-portal-hyprland hyprcursor wireplumber qt5-wayland qt6-wayland waybar copyq wl-clipboard hyprpaper swaybg kde-polkit-agent
+paru -S pcmanfm docker mullvad-vpn grim slurp mako kitty hyprland rofi-wayland fastfetch mpv wlogout hypridle hyprlock hyprpicker xdg-desktop-portal-hyprland hyprcursor wireplumber qt5-wayland qt6-wayland waybar copyq wl-clipboard hyprpaper swaybg kde-polkit-agent sshfs tmux
 
 echo "Installing software"
-paru -S nwg-look ntfs-3g keepassxc openssh rofi-power-menu feh rofi-wifi-menu candy-icons cava ranger gimp kdenlive krita zen-browser firefox uwufetch fzf qbittorrent ripgrep lazygit zathura obs-studio
+paru -S nwg-look obsidian ntfs-3g keepassxc openssh rofi-power-menu feh rofi-wifi-menu candy-icons cava ranger gimp kdenlive krita zen-browser firefox uwufetch fzf qbittorrent ripgrep lazygit zathura obs-studio
 
 echo "Installing Fonts"
 paru -S nerd-fonts adobe-source-code-pro-fonts cantarell-fonts fontconfig fonts-cjk gnu-free-fonts libfontenc libxfont2 ttf-font-awesome ttf-nerd-fonts-symbols ttf-nerd-fonts-symbols-common ttf-nerd-fonts-symbols-mono ttf-profont-nerd xorg-fonts-encodings xorg-mkfontscale ttf-hack
@@ -63,9 +63,10 @@ cp -r ~/dotfiles/.config/kitty ~/.config/
 cp -r ~/dotfiles/.config/cava ~/.config/
 cp -r ~/dotfiles/.config/lazygit ~/.config/
 cp -r ~/dotfiles/.config/copyq ~/.config/
+cp -r ~/dotfiles/.config/tmux ~/.config/
 cp -r ~/dotfiles/.themes/ ~/
 
-
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 echo "Enabling services"
 sudo systemctl enable sshd
@@ -77,13 +78,13 @@ sudo systemctl enable docker
 sudo systemctl enable libvirtd.service
 sudo systemctl start libvirtd.service
 
-usermod -aG video,ftp,log,uucp,tty,utmp,kvm,input,audio,storage $USER
-usermod -s /bin/zsh $USER
+sudo usermod -aG video,ftp,log,uucp,tty,utmp,kvm,input,audio,storage $USER
+sudo usermod -s /bin/zsh $USER
 
 sudo virsh net-start default
 sudo virsh net-autostart default
 
-usermod -aG docker $USER
+sudo usermod -aG docker $USER
 
 echo "Git global UserName type Leave blank to skip"
 read username
@@ -95,7 +96,7 @@ if [[ -n ${username} ]]; then
 fi
 
 echo "Pulling docker mobsf"
-docker pull opensecurity/mobile-security-framework-mobsf:latest
+sudo docker pull opensecurity/mobile-security-framework-mobsf:latest
 
 echo "[+] to run mobfs"
 echo "[+] docker run -it --rm -p 8000:8000 opensecurity/mobile-security-framework-mobsf:latest"
@@ -104,7 +105,7 @@ echo "[+] docker run -it --rm -p 8000:8000 opensecurity/mobile-security-framewor
 echo "[+] GO TO /etc/libvirt/libvirtd.conf and uncomment "
 echo '[+] unix_sock_group = "libvirt" unix_sock_rw_perms = "0777"'
 echo "sudo usermod -aG libvirt $USER run this"
-usermod -aG libvirt $USER
+sudo usermod -aG libvirt $USER
 
 # will eventually connect to my prox mox server but I do eventually want to re vamp this
 # fix thjis up 
