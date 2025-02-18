@@ -45,7 +45,7 @@ cd ~
 
 echo "Adding BB Tools"
 paru -S caido hashcat scrcpy wireshark-qt gobuster ffuf binwalk ghidra radare2 android-tools android-studio burpsuite android-emulator android-apktool jadx
-
+paru -S oh-my-posh
 
 echo "Moving Configs"
 cp ~/dotfiles/.zshrc ~/.zshrc
@@ -62,9 +62,11 @@ cp -r ~/dotfiles/.config/gtk-4.0 ~/.config/
 cp -r ~/dotfiles/.config/kitty ~/.config/
 cp -r ~/dotfiles/.config/cava ~/.config/
 cp -r ~/dotfiles/.config/lazygit ~/.config/
+cp -r ~/dotfiles/.config/ohmyposh/ ~/.config/
 cp -r ~/dotfiles/.config/copyq ~/.config/
 cp -r ~/dotfiles/.config/tmux ~/.config/
 cp -r ~/dotfiles/.themes/ ~/
+cp -r ~dotfiles/.zsh ~/
 
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
