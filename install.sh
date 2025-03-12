@@ -65,8 +65,18 @@ cp -r ~/dotfiles/.config/lazygit ~/.config/
 cp -r ~/dotfiles/.config/ohmyposh/ ~/.config/
 cp -r ~/dotfiles/.config/copyq ~/.config/
 cp -r ~/dotfiles/.config/tmux ~/.config/
+cp -r ~/dotfiles/.config/tmux ~/.config/
 cp -r ~/dotfiles/.themes/ ~/
 cp -r ~dotfiles/.zsh ~/
+source ~/.zshrc
+
+echo "[+] installing go tools"
+go install -v github.com/tomnomnom/anew@latest
+go install -v github.com/s0md3v/smap/cmd/smap@latest
+go get -u github.com/tomnomnom/assetfinder
+go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+go install github.com/sensepost/gowitness@latest
+#gowitness scan single --url "https://sensepost.com"
 
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
