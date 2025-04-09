@@ -77,7 +77,7 @@ go get -u github.com/tomnomnom/assetfinder
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 go install github.com/sensepost/gowitness@latest
 #gowitness scan single --url "https://sensepost.com"
-
+paru -S kantana
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 echo "Enabling services"
