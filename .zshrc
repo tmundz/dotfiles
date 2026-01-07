@@ -1,59 +1,41 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
+# ============================================================================
+# Clean .zshrc - Simplified and Fixed
+# ============================================================================
 
-# Lines configured by zsh-newuser-install
-#
-# Zinit installation
+# Zinit installation (plugin manager)
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [ ! -d $ZINIT_HOME ]; then
   mkdir -p "$(dirname $ZINIT_HOME)"
   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi 
-
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Zinit plugins
-source ~/.zsh/catppuccin_mocha-zsh-syntax-highlighting.zsh
-
-zinit ice depth=1; 
+# ============================================================================
+# Zinit Plugins
+# ============================================================================
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light Aloxaf/fzf-tab
 
-
-# Add in snippets
-zinit snippet OMZL::git.zsh
+# Oh-My-Zsh snippets (lightweight, only what you need)
 zinit snippet OMZP::git
 zinit snippet OMZP::sudo
 zinit snippet OMZP::archlinux
-zinit snippet OMZP::aws
-zinit snippet OMZP::kubectl
-zinit snippet OMZP::kubectx
 zinit snippet OMZP::command-not-found
-
+zinit snippet OMZP::colored-man-pages
 
 # Load completions
 autoload -U compinit && compinit
 zinit cdreplay -q
 
-
-eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/config.json)"
-
-## Keybindings
-bindkey -e
-bindkey '^[j' history-search-forward   # Alt + j → next command (down)
-bindkey '^[k' history-search-backward  # Alt + k → previous command (up)
-bindkey '^[w' kill-region
-
-
+# ============================================================================
+# History Configuration
+# ============================================================================
 HISTFILE=~/.histfile
-HISTSIZE=5000
-SAVEHIST=$HISTSIZE
-HISTDUP=erase
+HISTSIZE=10000
+SAVEHIST=10000
 setopt appendhistory
-setopt sharehistory
 setopt sharehistory
 setopt hist_ignore_space
 setopt hist_ignore_all_dups
@@ -61,65 +43,78 @@ setopt hist_save_no_dups
 setopt hist_find_no_dups
 unsetopt beep
 
-# Completion styling
+# ============================================================================
+# Keybindings
+# ============================================================================
+bindkey -e
+bindkey '^[j' history-search-forward   # Alt + j → next command
+bindkey '^[k' history-search-backward  # Alt + k → previous command
+bindkey '^[w' kill-region
+bindkey "^[[3~" delete-char
+
+# ============================================================================
+# Completion Styling
+# ============================================================================
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
+zstyle ':completion:*' menu select
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
-
-
+# ============================================================================
+# Environment Variables
+# ============================================================================
 export EDITOR=nvim
 export VISUAL=nvim
+export PATH="$HOME/go/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 
-#custom alias
+# ============================================================================
+# Aliases
+# ============================================================================
 alias ls='ls -CF --color=auto'
-alias ll='ls -lisa --color=auto'
+alias ll='ls -lah --color=auto'
 alias free='free -mt'
 alias mkdir='mkdir -pv'
 alias wget='wget -c'
 alias grep='grep --color=auto'
-alias source-zsh='source ~/.zshrc'
+alias vim='nvim'
+alias v='nvim'
 
+# Quick reload
+alias src='source ~/.zshrc && echo "zsh reloaded!"'
 
-vm_mount() {
-    if ! mountpoint -q ~/vm; then
-        sshfs user@sus-vm:/home/user ~/vm -o follow_symlinks,default_permissions
-   fi
-}
-vm_unmount() {
-  echo "Unmounting sshfs..."
-  fusermount -u ~/vm
-}
+# Git shortcuts
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline'
 
-
-alias ssh-vm="vm_mount && waypipe ssh user@sus-vm; vm_unmount"
-
-#GIT PROMPTS
-autoload -Uz vcs_info  # Where do these come from? What else is there?
+# ============================================================================
+# Git VCS Info (for prompt)
+# ============================================================================
+autoload -Uz vcs_info
 precmd_vcs_info() { vcs_info }
 precmd_functions+=( precmd_vcs_info )
 zstyle ':vcs_info:git:*' formats '%F{blue}(%b)%f'
 zstyle ':vcs_info:*' enable git
 setopt prompt_subst
 
+# ============================================================================
+# Two-Line Prompt (shows last 2 dirs or ~)
+# ============================================================================
+PROMPT='%F{cyan}┌─[%f%F{magenta}%n@%m%f%F{cyan}]%f %F{blue}%(3~|.../%2~|%~) %f${vcs_info_msg_0_}
+%F{cyan}└>%f '
 
+# ============================================================================
+# FZF Integration
+# ============================================================================
+if command -v fzf &> /dev/null; then
+    eval "$(fzf --zsh)"
+fi
 
-
-
-#prompts
-#prompts
-#PROMPT='%F{magenta}%n%F{blue}@%F{magenta}%m:%F{cyan}%~%f$vcs_info_msg_0_%F{magenta}
-#> %f'
-
-#PROMPT='%F{magenta}%~%f$vcs_info_msg_0_%F{cyan}
-#> %f'
-bindkey "^[[3~" delete-char
-#fastfetch
-#export JAVA_HOME=$HOME/jdk15 example for dev 
-# End of lines configured by zsh-newuser-install
-source $HOME/.cargo/env
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-eval "$(fzf --zsh)"
+# ============================================================================
+# Cargo environment
+# ============================================================================
+if [ -f "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+fi
