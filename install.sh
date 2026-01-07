@@ -29,7 +29,11 @@ if command -v paru > /dev/null 2>&1; then
 else 
     echo "Installing paru..."
     cd ~
-    git clone https://aur.archlinux.org/paru.git
+    if ! git clone https://aur.archlinux.org/paru.git 2>/dev/null; then
+        echo "paru directory exists, removing and retrying..."
+        rm -rf ~/paru
+        git clone https://aur.archlinux.org/paru.git
+    fi
     cd paru
     makepkg -si
     cd ~
