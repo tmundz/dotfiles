@@ -53,7 +53,7 @@ echo "Installing Hyprland..."
 paru -S --noconfirm hyprland waybar rofi-wayland mako wezterm foot \
     grim slurp swappy wl-clipboard cliphist \
     xdg-desktop-portal-hyprland hyprcursor hyprlock hypridle hyprpaper \
-    qt5-wayland qt6-wayland wireplumber kde-polkit-agent fastfetch
+    qt5-wayland qt6-wayland wireplumber polkit-kde-agent fastfetch
 
 # =============================================================================
 # Essential Software
