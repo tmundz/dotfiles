@@ -1,123 +1,204 @@
-#/bin/bash
+#!/bin/bash
 
-sudo pacman -Syu
+# =============================================================================
+# Streamlined Arch Linux Install Script
+# Hyprland + Essential Tools Only
+# =============================================================================
 
-# create a check somehow
-if command cargo -v > /dev/null 2>&1; then 
-	echo "cagro installed"
+set -e  # Exit on error
+
+echo "Starting system update..."
+sudo pacman -Syu --noconfirm
+
+# =============================================================================
+# Install Rust/Cargo
+# =============================================================================
+if command -v cargo > /dev/null 2>&1; then 
+    echo "cargo already installed"
 else 
-	echo "installing rust"
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    echo "Installing rust..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source "$HOME/.cargo/env"
 fi 
 
-if command paru -h > /dev/null 2>&1; then 
-	echo "paru installed"
+# =============================================================================
+# Install Paru (AUR Helper)
+# =============================================================================
+if command -v paru > /dev/null 2>&1; then 
+    echo "paru already installed"
 else 
-	echo "installing paru"
-	cd ~
-	git clone https://aur.archlinux.org/paru.git
-	cd paru
-	makepkg -si
+    echo "Installing paru..."
+    cd ~
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si --noconfirm
+    cd ~
 fi
 
-echo "Installing Dev tools"
-sudo pacman -S brightnessctl zsh udiskie go delve gdb make cmake gcc man-db man-pages python gopls zig neovim
+# =============================================================================
+# Development Tools
+# =============================================================================
+echo "Installing Dev tools..."
+sudo pacman -S --noconfirm brightnessctl zsh git neovim make cmake gcc \
+    man-db man-pages python go gopls zig tmux udiskie base-devel
 
-echo "Installing Hyprland"
-paru -S pcmanfm docker mullvad-vpn grim slurp mako kitty hyprland rofi-wayland fastfetch mpv wlogout hypridle hyprlock hyprpicker xdg-desktop-portal-hyprland hyprcursor wireplumber qt5-wayland qt6-wayland waybar copyq wl-clipboard hyprpaper swaybg kde-polkit-agent sshfs tmux
+# =============================================================================
+# Hyprland Core
+# =============================================================================
+echo "Installing Hyprland..."
+paru -S --noconfirm hyprland waybar rofi-wayland mako wezterm foot \
+    grim slurp swappy wl-clipboard cliphist \
+    xdg-desktop-portal-hyprland hyprcursor hyprlock hypridle hyprpaper \
+    qt5-wayland qt6-wayland wireplumber kde-polkit-agent fastfetch
 
-echo "Installing software"
-paru -S nwg-look obsidian ntfs-3g keepassxc openssh rofi-power-menu feh rofi-wifi-menu candy-icons cava ranger gimp kdenlive krita zen-browser firefox uwufetch fzf qbittorrent ripgrep lazygit zathura obs-studio
+# =============================================================================
+# Essential Software
+# =============================================================================
+echo "Installing software..."
+paru -S --noconfirm docker zen-browser brave-bin pcmanfm mpv openssh \
+    keepassxc fzf ripgrep lazygit okular ntfs-3g obs-studio \
+    candy-icons nwg-look
 
-echo "Installing Fonts"
-paru -S nerd-fonts adobe-source-code-pro-fonts cantarell-fonts fontconfig fonts-cjk gnu-free-fonts libfontenc libxfont2 ttf-font-awesome ttf-nerd-fonts-symbols ttf-nerd-fonts-symbols-common ttf-nerd-fonts-symbols-mono ttf-profont-nerd xorg-fonts-encodings xorg-mkfontscale ttf-hack
+# =============================================================================
+# Fonts
+# =============================================================================
+echo "Installing Fonts..."
+paru -S --noconfirm ttf-jetbrains-mono-nerd \
+    ttf-fira-code-nerd \
+    adobe-source-code-pro-fonts \
+    ttf-font-awesome \
+    ttf-nerd-fonts-symbols-common \
+    noto-fonts \
+    noto-fonts-cjk \
+    noto-fonts-emoji \
+    ttf-dejavu \
+    fontconfig \
+    libfontenc \
+    libxfont2 \
+    xorg-fonts-encodings \
+    xorg-mkfontscale
 
-echo "Installing KVM"
-sudo pacman -S qemu-full virt-manager virt-viewer dnsmasq bridge-utils libguestfs ebtables vde2 openbsd-netcat
+# =============================================================================
+# KVM/Virtualization
+# =============================================================================
+echo "Installing KVM..."
+sudo pacman -S --noconfirm qemu-full virt-manager virt-viewer dnsmasq \
+    bridge-utils libguestfs ebtables vde2 openbsd-netcat
 
-echo "Installing the needed images"
-cd ~
-git clone --depth=1 https://github.com/adi1090x/rofi.git
-cd rofi
-chmod +x setup.sh
-./setup.sh
-cd ~
+# =============================================================================
+# Optional: Rofi Themes (Comment out if you don't want 50+ themes)
+# =============================================================================
+# echo "Installing Rofi Themes..."
+# cd ~
+# git clone --depth=1 https://github.com/adi1090x/rofi.git
+# cd rofi
+# chmod +x setup.sh
+# ./setup.sh
+# cd ~
 
-echo "Adding BB Tools"
-paru -S caido hashcat scrcpy wireshark-qt gobuster ffuf binwalk ghidra radare2 android-tools android-studio burpsuite android-emulator android-apktool jadx
-paru -S oh-my-posh
+# =============================================================================
+# BUG BOUNTY / HACKING TOOLS (Install manually when needed)
+# =============================================================================
+# echo "Installing Bug Hunting Tools..."
+# paru -S --noconfirm caido hashcat wireshark-qt gobuster ffuf burpsuite
 
-echo "Moving Configs"
-cp ~/dotfiles/.zshrc ~/.zshrc
-cp ~/dotfiles/.zprofile ~/.zprofile
-cp -r ~/dotfiles/.config/hypr/  ~/.config/
-cp -r ~/dotfiles/.config/nvim ~/.config/
-cp -r ~/dotfiles/.config/rofi ~/.config/
-cp -r ~/dotfiles/.config/fastfetch ~/.config/
-cp -r ~/dotfiles/.config/waybar ~/.config/
-cp -r ~/dotfiles/.config/mako ~/.config/
-cp -r ~/dotfiles/.config/gtk-2.0 ~/.config/
-cp -r ~/dotfiles/.config/gtk-3.0 ~/.config/
-cp -r ~/dotfiles/.config/gtk-4.0 ~/.config/
-cp -r ~/dotfiles/.config/kitty ~/.config/
-cp -r ~/dotfiles/.config/cava ~/.config/
-cp -r ~/dotfiles/.config/lazygit ~/.config/
-cp -r ~/dotfiles/.config/ohmyposh/ ~/.config/
-cp -r ~/dotfiles/.config/copyq ~/.config/
-cp -r ~/dotfiles/.config/tmux ~/.config/
-cp -r ~/dotfiles/.config/tmux ~/.config/
-cp -r ~/dotfiles/.themes/ ~/
-cp -r ~dotfiles/.zsh ~/
-source ~/.zshrc
+# Mobile Testing
+# paru -S --noconfirm scrcpy android-tools android-studio android-emulator android-apktool jadx
 
-echo "[+] installing go tools"
-go install -v github.com/tomnomnom/anew@latest
-go install -v github.com/s0md3v/smap/cmd/smap@latest
-go get -u github.com/tomnomnom/assetfinder
-go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-go install github.com/sensepost/gowitness@latest
-#gowitness scan single --url "https://sensepost.com"
-paru -S kantana
+# Reverse Engineering  
+# paru -S --noconfirm binwalk ghidra radare2
+
+# echo "Installing Go Tools..."
+# go install -v github.com/tomnomnom/anew@latest
+# go install -v github.com/s0md3v/smap/cmd/smap@latest
+# go install -v github.com/tomnomnom/assetfinder@latest
+# go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+# go install -v github.com/sensepost/gowitness@latest
+# paru -S --noconfirm katana
+
+# Docker Security Tools
+# echo "Pulling docker MobSF..."
+# sudo docker pull opensecurity/mobile-security-framework-mobsf:latest
+# echo "[+] To run MobSF:"
+# echo "[+] docker run -it --rm -p 8000:8000 opensecurity/mobile-security-framework-mobsf:latest"
+
+# =============================================================================
+# Install tmux plugin manager
+# =============================================================================
+echo "Installing tmux plugin manager..."
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-echo "Enabling services"
-sudo systemctl enable sshd
-sudo systemctl start sshd
+# =============================================================================
+# Moving Configs
+# =============================================================================
+echo "Moving essential configs..."
+# Shell configs
+cp ~/dotfiles/.zshrc ~/.zshrc
+cp ~/dotfiles/.zprofile ~/.zprofile
+cp -r ~/dotfiles/.zsh ~/
 
-sudo systemctl start docker                                        
-sudo systemctl enable docker
+# Hyprland only
+mkdir -p ~/.config
+cp -r ~/dotfiles/.config/hypr/ ~/.config/
 
-sudo systemctl enable libvirtd.service
-sudo systemctl start libvirtd.service
+echo "Configs copied. You'll need to manually configure wezterm, waybar, mako, etc."
 
-sudo usermod -aG video,ftp,log,uucp,tty,utmp,kvm,input,audio,storage $USER
+# =============================================================================
+# Password Policy - 7 attempts before lockout
+# =============================================================================
+echo "Configuring password policy (7 attempts before lockout)..."
+echo "deny = 7" | sudo tee -a /etc/security/faillock.conf > /dev/null
+
+# =============================================================================
+# Enable Services
+# =============================================================================
+echo "Enabling services..."
+sudo systemctl enable --now sshd
+sudo systemctl enable --now docker
+sudo systemctl enable --now libvirtd.service
+
+# User groups
+sudo usermod -aG docker,kvm,libvirt $USER
 sudo usermod -s /bin/zsh $USER
 
-sudo virsh net-start default
+# Libvirt network
+sudo virsh net-start default 2>/dev/null || true
 sudo virsh net-autostart default
 
-sudo usermod -aG docker $USER
+# Fix libvirt permissions automatically
+sudo sed -i 's/#unix_sock_group = "libvirt"/unix_sock_group = "libvirt"/' /etc/libvirt/libvirtd.conf
+sudo sed -i 's/#unix_sock_rw_perms = "0770"/unix_sock_rw_perms = "0770"/' /etc/libvirt/libvirtd.conf
+sudo systemctl restart libvirtd.service
 
-echo "Git global UserName type Leave blank to skip"
-read username
+# =============================================================================
+# Git Configuration
+# =============================================================================
+echo ""
+read -p "Git global username (leave blank to skip): " username
 if [[ -n ${username} ]]; then
-  git config --global user.name ${username}
-  echo "Now the git global Email"
-  read email
-  git config --global user.email ${email}
+  git config --global user.name "${username}"
+  read -p "Git global email: " email
+  git config --global user.email "${email}"
+  echo "Git configured successfully!"
 fi
 
-echo "Pulling docker mobsf"
-sudo docker pull opensecurity/mobile-security-framework-mobsf:latest
-
-echo "[+] to run mobfs"
-echo "[+] docker run -it --rm -p 8000:8000 opensecurity/mobile-security-framework-mobsf:latest"
-
-#bat --theme="Catppuccin Mocha" ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme
-echo "[+] GO TO /etc/libvirt/libvirtd.conf and uncomment "
-echo '[+] unix_sock_group = "libvirt" unix_sock_rw_perms = "0777"'
-echo "sudo usermod -aG libvirt $USER run this"
-sudo usermod -aG libvirt $USER
-
-# will eventually connect to my prox mox server but I do eventually want to re vamp this
-# fix thjis up 
+# =============================================================================
+# Cliphist Setup Reminder
+# =============================================================================
+echo ""
+echo "=========================================================================="
+echo "Installation Complete!"
+echo "=========================================================================="
+echo ""
+echo "IMPORTANT - Add to your Hyprland config:"
+echo ""
+echo "# Start cliphist daemon"
+echo "exec-once = wl-paste --type text --watch cliphist store"
+echo "exec-once = wl-paste --type image --watch cliphist store"
+echo ""
+echo "# Clipboard history keybind"
+echo "bind = SUPER, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+echo ""
+echo "=========================================================================="
+echo "You may need to log out and back in for group changes to take effect."
+echo "=========================================================================="
