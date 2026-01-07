@@ -11,13 +11,20 @@ echo "Starting system update..."
 sudo pacman -Syu --noconfirm
 
 # =============================================================================
+# Development Tools
+# =============================================================================
+echo "Installing Base dev & system tools..."
+sudo pacman -S --noconfirm brightnessctl zsh git neovim make cmake gcc \
+    man-db man-pages python go gopls zig tmux udiskie base-devel
+    
+# =============================================================================
 # Install Rust/Cargo
 # =============================================================================
 if command -v cargo > /dev/null 2>&1; then 
     echo "cargo already installed"
 else 
     echo "Installing rust..."
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     source "$HOME/.cargo/env"
 fi 
 
@@ -38,13 +45,6 @@ else
     makepkg -si
     cd ~
 fi
-
-# =============================================================================
-# Development Tools
-# =============================================================================
-echo "Installing Dev tools..."
-sudo pacman -S --noconfirm brightnessctl zsh git neovim make cmake gcc \
-    man-db man-pages python go gopls zig tmux udiskie base-devel
 
 # =============================================================================
 # Hyprland Core
