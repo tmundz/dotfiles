@@ -133,7 +133,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 # =============================================================================
 echo "Moving essential configs..."
 # Shell configs
-cp ~/dotfiles/.zshrc ~/.zshrc
+# cp ~/dotfiles/.zshrc ~/.zshrc
 cp ~/dotfiles/.zprofile ~/.zprofile
 cp -r ~/dotfiles/.zsh ~/
 
