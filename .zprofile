@@ -1,5 +1,5 @@
 #startx
 
-if [[ -z $TMUX ]]; then
+if [[ -z $HYPRLAND_INSTANCE_SIGNATURE ]]; then
   Hyprland
 fi
