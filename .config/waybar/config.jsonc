@@ -2,15 +2,14 @@
     "layer": "top",
     "position": "top",
     "mod": "dock",
-    "font": "Hack 12",  // Using Hack font
+    "font": "JetBrainsMono Nerd Font 12",
     "exclusive": true,
     "height": 30,  // General bar height
     "spacing": 10,  // Global spacing for uniformity
     "modules-left": [
         "custom/arch",
-        "cpu",
+        "custom/cpu-gpu",
         "memory",
-        "temperature",
         "hyprland/window"
     ],
     "modules-center": ["hyprland/workspaces"],
@@ -19,6 +18,7 @@
         "battery",
         "backlight",
         "pulseaudio",
+        "custom/weather",
         "clock",
         "custom/vpn",
         "tray",
@@ -27,7 +27,7 @@
 
     // Custom modules
     "custom/arch": {
-        "format": "  ",
+        "format": "󰣇",
         "tooltip": false,
         "on-click": "exec ~/.config/rofi/launchers/type-7/launcher.sh",
         "spacing": 10
@@ -39,23 +39,33 @@
         "spacing": 10
     },
     "custom/vpn": {
-        "format": " VPN:  ",
+        "format": " VPN:  ",
         "exec": "nmcli con show --active | grep vpn",
         "exec-if": "test -d /proc/sys/net/ipv4/conf/tun0",
         "return-type": "json",
         "interval": 10
     },
 
-    // CPU Module
-    "cpu": {
-        "format": "{usage}% ",
-        "tooltip": false,
-        "spacing": 10
+    // CPU/GPU Stats Module - shows both CPU and GPU usage with temps
+    "custom/cpu-gpu": {
+        "format": "{}",
+        "exec": "~/.config/waybar/scripts/cpu-gpu-toggle.sh",
+        "return-type": "json",
+        "interval": 2,
+        "tooltip": false
+    },
+
+    // Weather Module - Edmonton, Alberta
+    "custom/weather": {
+        "format": "󰅟 {}",
+        "exec": "~/.config/waybar/scripts/weather.sh",
+        "interval": 600,
+        "tooltip": false
     },
 
     // Memory Module
     "memory": {
-        "format": "{used}MB/{total}MB ",
+        "format": "󰍛 {used}MB/{total}MB",
         "tooltip": false,
         "spacing": 10
     },
@@ -64,7 +74,7 @@
     "temperature": {
         "critical-threshold": 80,
         "format": "{temperatureC}°C {icon}",
-        "format-icons": ["", "", ""],
+        "format-icons": ["", "", ""],
         "tooltip": false,
         "spacing": 10
     },
@@ -74,21 +84,21 @@
         "bat": "BAT0",
         "format": "{capacity}% {icon}",
         "format-charging": "{capacity}% 󰂄",
-      "format-plugged": "{capacity}% 󰚥",
-      "format-alt": "{power:0.1f}W {icon}",
-      "tooltip": false,
-        "format-icons": ["", "", "", "", ""],
+        "format-plugged": "{capacity}% 󰚥",
+        "format-alt": "{power:0.1f}W {icon}",
+        "tooltip": false,
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
         "spacing": 10,
         "states": {
-          "good": 85,
-          "warning": 40,
-          "critical": 20
-      }
+            "good": 85,
+            "warning": 40,
+            "critical": 20
+        }
     },
-  "backlight": {
+    "backlight": {
         "device": "amdgpu_bl1",
         "format": "{percent}%  {icon} ",
-      "format-icons": ["󰛩", "󱩎", "󱩏", "󱩐", "󱩑", "󱩒", "󱩓", "󱩔", "󱩕", "󱩖", "󰛨"],
+        "format-icons": ["󰛩", "󱩎", "󱩏", "󱩐", "󱩑", "󱩒", "󱩓", "󱩔", "󱩕", "󱩖", "󰛨"],
         "on-scroll-up": "brightnessctl --device=amdgpu_bl1 set 1%+",
         "on-scroll-down": "brightnessctl --device=amdgpu_bl1 set 1%-",
         "on-click": "brightnessctl --device-amdgpu_bl1 set 50",
@@ -100,24 +110,24 @@
     },
     // Network Module
     "network": {
-      // "interface": "wlp2*", // (Optional) To force the use of this interface
-      "interval": 2,
-      "format-wifi": " {bandwidthDownBits}",
-      "format-ethernet": "󰈀  Ethernet",
-      "tooltip": false,
-      "format-linked": "󰤭  {ifname} | No IP",
-      "format-disconnected": "󰤭  Disconnected",
-      "format-alt": "{icon} {essid}",
-      "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
-    "on-click-right": "kitty nmtui"
-  },
+        // "interface": "wlp2*", // (Optional) To force the use of this interface
+        "interval": 2,
+        "format-wifi": "{icon} {bandwidthDownBits}",
+        "format-ethernet": " Ethernet",
+        "tooltip": false,
+        "format-linked": " {ifname} | No IP",
+        "format-disconnected": " Disconnected",
+        "format-alt": "{icon} {essid}",
+        "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+        "on-click-right": "kitty nmtui"
+    },
 
     // Sound Module
     "pulseaudio": {
         "format": "{volume}% {icon}",
-        "format-muted": " 󰖁 ",
+        "format-muted": "󰖁 muted",
         "format-icons": {
-            "default": ["  ", "  ", "  "]
+            "default": ["󰕿", "󰖀", "󰕾"]
         },
         "on-click": "pavucontrol",
         "spacing": 10
@@ -147,9 +157,9 @@
             "8": "八",
             "9": "九",
             "10": "十",
-            "urgent": "",
-            "focused": "",
-            "default": ""
+            "urgent": "",
+            "focused": "",
+            "default": ""
         }
     },
 
@@ -158,4 +168,3 @@
         "spacing": 10
     }
 }
-

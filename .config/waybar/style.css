@@ -2,7 +2,7 @@
 
 /* Base Font Settings */
 * {
-  font-family: "Hack Nerd Font", "FontAwesome", "Hack", monospace;
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", "Font Awesome 6 Brands", monospace;
   font-size: 14px;
   color: @text; /* Default Text Color */
 }
@@ -31,7 +31,7 @@ window {
   border-radius: 5px;
   padding: 6px;
   margin: 4px; /* Space between elements */
-  font-family: "Hack Nerd Font"; /* Use Hack Nerd Font */
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
 }
 
 /* Workspaces Styling */
@@ -41,7 +41,7 @@ window {
   margin: 2px;
   padding: 5px;
   border-radius: 4px;
-  font-family: "Hack Nerd Font";
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
 }
 
 #hyprland-workspaces button.focused {
@@ -93,7 +93,7 @@ window {
 /* Clock Styling */
 #clock {
   color: @pink; /* pink for clock */
-  font-family: "Hack Nerd Font", "FontAwesome";
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
 }
 
 /* Custom Arch Logo */
@@ -106,6 +106,39 @@ window {
 #custom-powermenu {
   color: @pink; /* pink for power off */
   font-size: 16px;
+}
+
+/* CPU/GPU Toggle Module */
+#custom-cpu-gpu {
+  background-color: @base;
+  color: @pink;
+  border-radius: 5px;
+  padding: 6px;
+  margin: 4px;
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
+}
+
+#custom-cpu-gpu.gpu {
+  color: @mauve;
+}
+
+/* Weather Module */
+#custom-weather {
+  background-color: @base;
+  color: @sky;
+  border-radius: 5px;
+  padding: 6px;
+  margin: 4px;
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
+}
+
+/* Moon Phase Module */
+#custom-moon {
+  background-color: @base;
+  color: @lavender;
+  border-radius: 5px;
+  padding: 6px;
+  margin: 4px;
 }
 
 /* Tooltip for Clock */
