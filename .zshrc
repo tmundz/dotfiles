@@ -66,6 +66,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 export EDITOR=nvim
 export VISUAL=nvim
 export PATH="$HOME/go/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+export PATH="$PATH:$(pwd)/bin"
 
 # ============================================================================
 # Aliases
@@ -90,24 +91,51 @@ alias gp='git push'
 alias gl='git log --oneline'
 
 # ============================================================================
-# Git VCS Info (for prompt)
+# Catppuccin Mocha — colour palette (mauve/pink focus)
+# ============================================================================
+# pink=#f5c2e7  mauve=#cba6f7  flamingo=#f2cdcd  lavender=#b4befe
+# green=#a6e3a1  peach=#fab387  red=#f38ba8  overlay=#6c7086  surface=#585b70
+
+# ============================================================================
+# Git VCS Info (branch + staged/unstaged indicators)
 # ============================================================================
 autoload -Uz vcs_info
 precmd_vcs_info() { vcs_info }
 precmd_functions+=( precmd_vcs_info )
-zstyle ':vcs_info:git:*' formats '%F{blue}(%b)%f'
-zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:*'     enable git
+zstyle ':vcs_info:*'     check-for-changes true
+zstyle ':vcs_info:git:*' stagedstr    '%F{#a6e3a1}●%f'          # green dot  = staged
+zstyle ':vcs_info:git:*' unstagedstr  '%F{#fab387}●%f'          # peach dot  = unstaged
+zstyle ':vcs_info:git:*' formats      '%F{#cba6f7}(%b)%f%c%u'  # (branch)●●
+zstyle ':vcs_info:git:*' actionformats '%F{#f38ba8}(%b|%a)%f%c%u'  # (branch|MERGE)
 setopt prompt_subst
 
 # ============================================================================
-# Two-Line Prompt (shows last 2 dirs or ~)
+# Prompt — Catppuccin Mocha · mauve/pink
+# Line 1:  ┌─[user@host]─[path] (branch)●
+# Line 2:  └─❯
+# RPROMPT: ✓/✗ exit-code  HH:MM:SS
 # ============================================================================
-PROMPT='%F{cyan}┌─[%f%F{magenta}%n@%m%f%F{cyan}]%f %F{blue}%(3~|.../%2~|%~) %f${vcs_info_msg_0_}
-%F{cyan}└>%f '
+PROMPT='%F{#cba6f7}┌─[%f%F{#f5c2e7}%n%f%F{#6c7086}@%f%F{#f2cdcd}%m%f%F{#cba6f7}]─[%f%F{#b4befe}%(4~|…/%3~|%~)%f%F{#cba6f7}]%f ${vcs_info_msg_0_}
+%F{#cba6f7}└─%f%F{#f5c2e7}❯%f '
+
+RPROMPT='%(?.%F{#a6e3a1}✓%f.%F{#f38ba8}✗%? %f)  %F{#585b70}%*%f'
 
 # ============================================================================
-# FZF Integration
+# Autosuggestions — muted surface colour so it doesn't clash
 # ============================================================================
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#585b70'
+
+# ============================================================================
+# FZF — Catppuccin Mocha palette
+# ============================================================================
+export FZF_DEFAULT_OPTS="\
+  --color=bg+:#313244,bg:#1e1e2e,spinner:#f5c2e7,hl:#f38ba8 \
+  --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5c2e7 \
+  --color=marker:#b4befe,fg+:#cdd6f4,prompt:#f5c2e7,hl+:#f38ba8 \
+  --color=border:#cba6f7 \
+  --border=rounded --prompt='❯ ' --pointer='▸' --marker='✓'"
+
 if command -v fzf &> /dev/null; then
     eval "$(fzf --zsh)"
 fi
@@ -118,3 +146,4 @@ fi
 if [ -f "$HOME/.cargo/env" ]; then
     source "$HOME/.cargo/env"
 fi
+export PATH="$PATH:/home/caphe/iothackbot/bin"

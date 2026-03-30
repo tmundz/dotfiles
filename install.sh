@@ -5,8 +5,6 @@
 # Hyprland + Essential Tools Only
 # =============================================================================
 
-set -e  # Exit on error
-
 echo "Starting system update..."
 sudo pacman -Syu --noconfirm
 
@@ -50,7 +48,7 @@ fi
 # Hyprland Core
 # =============================================================================
 echo "Installing Hyprland..."
-paru -S --noconfirm hyprland waybar rofi-wayland mako wezterm foot \
+paru -S hyprland waybar rofi-wayland mako wezterm foot \
     grim slurp swappy wl-clipboard cliphist \
     xdg-desktop-portal-hyprland hyprcursor hyprlock hypridle hyprpaper \
     qt5-wayland qt6-wayland wireplumber polkit-kde-agent fastfetch
@@ -59,7 +57,7 @@ paru -S --noconfirm hyprland waybar rofi-wayland mako wezterm foot \
 # Essential Software
 # =============================================================================
 echo "Installing software..."
-paru -S --noconfirm docker zen-browser brave-bin pcmanfm mpv openssh \
+paru -S docker zen-browser brave-bin pcmanfm mpv openssh \
     keepassxc fzf ripgrep lazygit okular ntfs-3g obs-studio \
     candy-icons nwg-look
 
@@ -67,8 +65,7 @@ paru -S --noconfirm docker zen-browser brave-bin pcmanfm mpv openssh \
 # Fonts
 # =============================================================================
 echo "Installing Fonts..."
-paru -S --noconfirm ttf-jetbrains-mono-nerd \
-    ttf-fira-code-nerd \
+paru -S ttf-jetbrains-mono-nerd \
     adobe-source-code-pro-fonts \
     ttf-font-awesome \
     ttf-nerd-fonts-symbols-common \
@@ -86,7 +83,7 @@ paru -S --noconfirm ttf-jetbrains-mono-nerd \
 # KVM/Virtualization
 # =============================================================================
 echo "Installing KVM..."
-sudo pacman -S --noconfirm qemu-full virt-manager virt-viewer dnsmasq \
+sudo pacman -S qemu-full virt-manager virt-viewer dnsmasq \
     bridge-utils libguestfs ebtables vde2 openbsd-netcat
 
 # =============================================================================
@@ -121,10 +118,10 @@ sudo pacman -S --noconfirm qemu-full virt-manager virt-viewer dnsmasq \
 # paru -S --noconfirm katana
 
 # Docker Security Tools
-# echo "Pulling docker MobSF..."
-# sudo docker pull opensecurity/mobile-security-framework-mobsf:latest
-# echo "[+] To run MobSF:"
-# echo "[+] docker run -it --rm -p 8000:8000 opensecurity/mobile-security-framework-mobsf:latest"
+echo "Pulling docker MobSF..."
+sudo docker pull opensecurity/mobile-security-framework-mobsf:latest
+echo "[+] To run MobSF:"
+echo "[+] docker run -it --rm -p 8000:8000 opensecurity/mobile-security-framework-mobsf:latest"
 
 # =============================================================================
 # Install tmux plugin manager
@@ -140,10 +137,9 @@ echo "Moving essential configs..."
 # cp ~/dotfiles/.zshrc ~/.zshrc
 cp ~/dotfiles/.zprofile ~/.zprofile
 cp -r ~/dotfiles/.zsh ~/
-
-# Hyprland only
-mkdir -p ~/.config
+cp -r ~/dotfiles/.config/waybar ~/.config/ 
 cp -r ~/dotfiles/.config/hypr/ ~/.config/
+cp -r ~/dotfiles/.config/mako ~/.config/
 
 echo "Configs copied. You'll need to manually configure wezterm, waybar, mako, etc."
 
