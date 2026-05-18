@@ -1,0 +1,16 @@
+android-emulator
+android-studio
+apktool
+amass
+assetfinder
+burpsuite
+caido-desktop
+ffuf
+firmware-mod-kit
+kiterunner-bin
+ngrok
+nuclei
+saleae-logic2
+seclists
+subfinder
+uefitool-bin

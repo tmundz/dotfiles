@@ -1,0 +1,6 @@
+brave-bin
+candy-icons-git
+paru
+visual-studio-code-bin
+wlogout
+zen-browser-bin

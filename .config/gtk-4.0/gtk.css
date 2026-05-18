@@ -1,1 +1,86 @@
-/home/denji/.themes/Catppuccin-Mocha-Standard-Mauve-Dark/gtk-4.0/gtk.css
+/* Catppuccin Mocha base theme */
+@import url("../../.themes/Catppuccin-Mocha-Standard-Mauve-Dark/gtk-4.0/gtk.css");
+
+/* ============================================================
+   Ghostty tab bar — Catppuccin Mocha · mauve/pink
+   Targets libadwaita AdwTabBar selectors
+   ============================================================ */
+
+/* Tab bar container — match terminal background */
+tabbar,
+tabbar .tab-bar {
+  background: #1e1e2e;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Bottom border of the tab bar */
+tabbar .bottom-border {
+  background: #313244;
+  min-height: 1px;
+}
+
+/* ── Inactive tabs ─────────────────────────────────────────── */
+tabbar tab {
+  background: transparent;
+  color: #6c7086;
+  border-radius: 8px 8px 0 0;
+  margin: 3px 2px 0;
+  padding: 0 6px;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+tabbar tab:hover:not(:checked) {
+  background: #181825;
+  color: #a6adc8;
+}
+
+/* ── Active tab ────────────────────────────────────────────── */
+tabbar tab:checked {
+  background: #313244;
+  color: #cba6f7;
+}
+
+/* Pink bottom indicator on active tab */
+tabbar tab:checked .tab-indicator {
+  background: #f5c2e7;
+  border-radius: 2px;
+}
+
+/* ── Tab title ─────────────────────────────────────────────── */
+tabbar tab .tab-title {
+  font-weight: 500;
+}
+
+/* ── Close button ──────────────────────────────────────────── */
+tabbar tab .tab-close-btn {
+  color: #585b70;
+  border-radius: 4px;
+}
+
+tabbar tab .tab-close-btn:hover {
+  background: #45475a;
+  color: #f5c2e7;
+}
+
+tabbar tab:checked .tab-close-btn {
+  color: #9399b2;
+}
+
+tabbar tab:checked .tab-close-btn:hover {
+  background: #45475a;
+  color: #f5c2e7;
+}
+
+/* ── New-tab / scroll action buttons ──────────────────────── */
+tabbar .start-action,
+tabbar .end-action {
+  background: #1e1e2e;
+  color: #6c7086;
+}
+
+tabbar .start-action button:hover,
+tabbar .end-action button:hover {
+  background: #313244;
+  color: #cba6f7;
+}

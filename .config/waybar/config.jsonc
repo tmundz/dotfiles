@@ -4,12 +4,13 @@
     "mod": "dock",
     "font": "JetBrainsMono Nerd Font 12",
     "exclusive": true,
-    "height": 30,  // General bar height
-    "spacing": 10,  // Global spacing for uniformity
+    "height": 34,
+    "spacing": 6,
     "modules-left": [
         "custom/arch",
         "custom/cpu-gpu",
         "memory",
+        "disk",
         "hyprland/window"
     ],
     "modules-center": ["hyprland/workspaces"],
@@ -28,22 +29,26 @@
     // Custom modules
     "custom/arch": {
         "format": "󰣇",
-        "tooltip": false,
-        "on-click": "exec ~/.config/rofi/launchers/type-7/launcher.sh",
-        "spacing": 10
+        "tooltip": true,
+        "tooltip-format": "System menu",
+        "on-click": "~/.config/waybar/scripts/system-menu.sh",
+        "on-click-right": "~/.config/rofi/launchers/type-7/launcher.sh",
+        "spacing": 8
     },
     "custom/powermenu": {
-        "format": " ⏻ ",
-        "tooltip": false,
-        "on-click": "systemctl poweroff",
-        "spacing": 10
+        "format": " 󰐥 ",
+        "tooltip": true,
+        "tooltip-format": "Power menu",
+        "on-click": "~/.config/wlogout/launch.sh",
+        "spacing": 8
     },
     "custom/vpn": {
-        "format": " VPN:  ",
-        "exec": "nmcli con show --active | grep vpn",
+        "format": "󰖂 VPN",
+        "exec": "nmcli con show --active | grep -i vpn",
         "exec-if": "test -d /proc/sys/net/ipv4/conf/tun0",
-        "return-type": "json",
-        "interval": 10
+        "interval": 10,
+        "tooltip": true,
+        "tooltip-format": "VPN connected"
     },
 
     // CPU/GPU Stats Module - shows both CPU and GPU usage with temps
@@ -52,7 +57,7 @@
         "exec": "~/.config/waybar/scripts/cpu-gpu-toggle.sh",
         "return-type": "json",
         "interval": 2,
-        "tooltip": false
+        "tooltip": true
     },
 
     // Weather Module - Edmonton, Alberta
@@ -65,9 +70,30 @@
 
     // Memory Module
     "memory": {
-        "format": "󰍛 {used}MB/{total}MB",
-        "tooltip": false,
-        "spacing": 10
+        "format": "󰍛 {percentage}%",
+        "tooltip": true,
+        "tooltip-format": "{used:0.1f}G / {total:0.1f}G",
+        "spacing": 8
+    },
+
+    // Storage Module
+    "disk": {
+        "path": "/",
+        "format": "󰋊 {used}/{total}",
+        "format-alt": "󰋊 {free} free",
+        "tooltip": true,
+        "tooltip-format": "{path}\n{used} used / {total} total\n{free} free\n{percentage_used}% used",
+        "interval": 30,
+        "spacing": 8
+    },
+
+    // Active Window
+    "hyprland/window": {
+        "format": "{}",
+        "max-length": 34,
+        "separate-outputs": true,
+        "tooltip": true,
+        "tooltip-format": "{}"
     },
 
     // Temperature Module
@@ -82,13 +108,14 @@
     // Battery Module
     "battery": {
         "bat": "BAT0",
-        "format": "{capacity}% {icon}",
+        "format": "{icon} {capacity}%",
         "format-charging": "{capacity}% 󰂄",
         "format-plugged": "{capacity}% 󰚥",
         "format-alt": "{power:0.1f}W {icon}",
-        "tooltip": false,
+        "tooltip": true,
+        "tooltip-format": "{time} remaining",
         "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-        "spacing": 10,
+        "spacing": 8,
         "states": {
             "good": 85,
             "warning": 40,
@@ -97,48 +124,54 @@
     },
     "backlight": {
         "device": "amdgpu_bl1",
-        "format": "{percent}%  {icon} ",
+        "format": "{icon} {percent}%",
         "format-icons": ["󰛩", "󱩎", "󱩏", "󱩐", "󱩑", "󱩒", "󱩓", "󱩔", "󱩕", "󱩖", "󰛨"],
-        "on-scroll-up": "brightnessctl --device=amdgpu_bl1 set 1%+",
-        "on-scroll-down": "brightnessctl --device=amdgpu_bl1 set 1%-",
-        "on-click": "brightnessctl --device-amdgpu_bl1 set 50",
+        "on-scroll-up": "brightnessctl --device=amdgpu_bl1 set 5%+",
+        "on-scroll-down": "brightnessctl --device=amdgpu_bl1 set 5%-",
+        "on-click": "brightnessctl --device=amdgpu_bl1 set 50%",
         "min-length": 6,
-        "scroll-step": 0.5,
-        "spacing": 10,
+        "scroll-step": 5,
+        "spacing": 8,
         "reverse-scrolling": true,
-        "tooltip": false
+        "tooltip": true,
+        "tooltip-format": "Scroll to adjust brightness"
     },
     // Network Module
     "network": {
         // "interface": "wlp2*", // (Optional) To force the use of this interface
         "interval": 2,
-        "format-wifi": "{icon} {bandwidthDownBits}",
-        "format-ethernet": " Ethernet",
-        "tooltip": false,
+        "format-wifi": "{icon} {essid}",
+        "format-ethernet": "󰈀 Ethernet",
+        "tooltip": true,
+        "tooltip-format": "{ifname}\n{ipaddr}\nDown: {bandwidthDownBits}\nUp: {bandwidthUpBits}",
         "format-linked": " {ifname} | No IP",
-        "format-disconnected": " Disconnected",
-        "format-alt": "{icon} {essid}",
+        "format-disconnected": "󰤮 Offline",
+        "format-alt": "{icon} {bandwidthDownBits}",
         "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
-        "on-click-right": "kitty nmtui"
+        "on-click": "ghostty -e nmtui"
     },
 
     // Sound Module
     "pulseaudio": {
-        "format": "{volume}% {icon}",
+        "format": "{icon} {volume}%",
         "format-muted": "󰖁 muted",
         "format-icons": {
             "default": ["󰕿", "󰖀", "󰕾"]
         },
-        "on-click": "pavucontrol",
-        "spacing": 10
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+        "tooltip": true,
+        "tooltip-format": "Click to mute, scroll to change volume",
+        "spacing": 8
     },
 
     // Clock Module
     "clock": {
         "format": "󰃰 {:%I:%M %p}",
-        "format-alt": "󰃰 {:%Y-%m-%d}",
+        "format-alt": "󰃰 {:%a %b %d}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "spacing": 10
+        "spacing": 8
     },
 
     // Hyprland Workspaces (showing all 10 workspaces)
@@ -165,6 +198,6 @@
 
     "tray": {
         "icon-size": 18,
-        "spacing": 10
+        "spacing": 8
     }
 }

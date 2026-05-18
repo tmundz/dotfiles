@@ -1,0 +1,6 @@
+androguard
+apkid
+frida-tools
+objection
+pwntools
+ropper

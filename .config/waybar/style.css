@@ -1,148 +1,191 @@
-@import "mocha.css"; /* Importing the color variables */
+@import "mocha.css";
 
-/* Base Font Settings */
 * {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", "Font Awesome 6 Brands", monospace;
-  font-size: 14px;
-  color: @text; /* Default Text Color */
+  font-size: 13px;
+  min-height: 0;
+  text-shadow: none;
 }
 
-/* Bar Background and General Module Styling */
-window {
-  background-color: @base; /* Dark background */
-  border-bottom: 2px solid @pink; /* Bottom border */
+window#waybar {
+  background: transparent;
+  border-bottom: 2px solid @mauve;
   color: @text;
-  padding: 0 10px; /* Adds padding around the modules */
 }
 
-/* Modules Style */
-#cpu,
+tooltip {
+  background: @mantle;
+  border: 1px solid @mauve;
+  border-radius: 8px;
+}
+
+tooltip label {
+  color: @text;
+  padding: 6px;
+}
+
+#custom-arch,
+#custom-cpu-gpu,
 #memory,
 #disk,
-#pulseaudio,
-#battery,
+#window,
 #network,
-#vpn,
+#battery,
+#backlight,
+#pulseaudio,
+#custom-weather,
+#custom-vpn,
 #clock,
 #tray,
-#temperature {
-  background-color: @base;
-  color: @pink; /* Light pink text color */
-  border-radius: 5px;
-  padding: 6px;
-  margin: 4px; /* Space between elements */
-  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
-}
-
-/* Workspaces Styling */
-#hyprland-workspaces button {
-  background-color: @surface0;
-  color: @pink;
-  margin: 2px;
-  padding: 5px;
-  border-radius: 4px;
-  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
-}
-
-#hyprland-workspaces button.focused {
-  background-color: @pink;
-  color: @base; /* Dark text on light background */
-}
-
-#hyprland-workspaces button.urgent {
-  background-color: @red;
-  color: @text;
-}
-
-/* Battery Module */
-#battery {
-  color: @green; /* Default battery color */
-}
-
-#battery.good {
-  color: @mauve; /* pink for good battery */
-}
-
-#battery.warning {
-  color: @red; /* Red for warning */
-}
-
-#battery.charging {
-  color: @green; /* Green for charging */
-}
-
-#battery.critical {
-  color: @red; /* Red for critical */
-}
-
-/* Tray Icons */
-#tray {
-  /* Customize if needed */
-}
-
-/* Network Module */
-#network {
-  color: @pink; /* pink for network */
-}
-
-/* Sound Module */
-#pulseaudio {
-  color: @peach; /* Orange for sound */
-}
-
-/* Clock Styling */
-#clock {
-  color: @pink; /* pink for clock */
-  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
-}
-
-/* Custom Arch Logo */
-#custom-arch {
-  color: @pink; /* Light pink */
-  font-size: 16px; /* Slightly larger for logo */
-}
-
-/* Custom Power Menu */
 #custom-powermenu {
-  color: @pink; /* pink for power off */
-  font-size: 16px;
+  background: @surface0;
+  border: 1px solid @surface1;
+  border-radius: 8px;
+  color: @text;
+  margin: 4px 2px;
+  padding: 0 10px;
 }
 
-/* CPU/GPU Toggle Module */
+#custom-arch {
+  background: @mauve;
+  border-color: @mauve;
+  color: @crust;
+  font-size: 17px;
+  font-weight: 700;
+  margin-left: 8px;
+  padding: 0 12px;
+}
+
 #custom-cpu-gpu {
-  background-color: @base;
   color: @pink;
-  border-radius: 5px;
-  padding: 6px;
-  margin: 4px;
-  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
 }
 
-#custom-cpu-gpu.gpu {
+#memory {
   color: @mauve;
 }
 
-/* Weather Module */
-#custom-weather {
-  background-color: @base;
-  color: @sky;
-  border-radius: 5px;
-  padding: 6px;
-  margin: 4px;
-  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
-}
-
-/* Moon Phase Module */
-#custom-moon {
-  background-color: @base;
+#disk {
   color: @lavender;
-  border-radius: 5px;
-  padding: 6px;
-  margin: 4px;
 }
 
-/* Tooltip for Clock */
-#clock:hover {
-  background-color: @surface1;
+#window {
   color: @subtext1;
+  min-width: 0;
+  padding: 0 12px;
+}
+
+#workspaces {
+  background: @surface0;
+  border-radius: 8px;
+  margin: 4px 2px;
+  padding: 0 4px;
+}
+
+#workspaces button {
+  background: transparent;
+  border-radius: 6px;
+  color: @overlay2;
+  margin: 3px 1px;
+  min-width: 28px;
+  padding: 0 7px;
+}
+
+#workspaces button:hover {
+  background: @surface1;
+  color: @pink;
+}
+
+#workspaces button.active,
+#workspaces button.focused {
+  background: @mauve;
+  color: @crust;
+  font-weight: 700;
+}
+
+#workspaces button.urgent {
+  background: @red;
+  color: @crust;
+}
+
+#network {
+  color: @sky;
+}
+
+#network.disconnected {
+  color: @red;
+}
+
+#battery {
+  color: @green;
+}
+
+#battery.warning:not(.charging) {
+  color: @peach;
+}
+
+#battery.critical:not(.charging) {
+  background: @red;
+  color: @crust;
+}
+
+#backlight {
+  color: @yellow;
+}
+
+#pulseaudio {
+  color: @pink;
+}
+
+#pulseaudio.muted {
+  color: @overlay1;
+}
+
+#custom-weather {
+  color: @sapphire;
+}
+
+#custom-vpn {
+  color: @green;
+}
+
+#clock {
+  background: @mauve;
+  border-color: @mauve;
+  color: @crust;
+  font-weight: 700;
+}
+
+#tray {
+  background: @mantle;
+}
+
+#custom-powermenu {
+  color: @pink;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+#custom-arch:hover,
+#custom-cpu-gpu:hover,
+#memory:hover,
+#disk:hover,
+#network:hover,
+#battery:hover,
+#backlight:hover,
+#pulseaudio:hover,
+#custom-weather:hover,
+#custom-vpn:hover,
+#clock:hover,
+#custom-powermenu:hover {
+  background: @surface1;
+  border-color: @pink;
+}
+
+#custom-arch:hover,
+#clock:hover {
+  background: @pink;
+  color: @crust;
 }

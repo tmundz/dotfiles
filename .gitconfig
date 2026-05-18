@@ -1,0 +1,9 @@
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = false
+
+# Set your identity locally after installing:
+# git config --global user.name "Your Name"
+# git config --global user.email "you@example.com"

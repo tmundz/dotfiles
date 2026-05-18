@@ -146,4 +146,18 @@ fi
 if [ -f "$HOME/.cargo/env" ]; then
     source "$HOME/.cargo/env"
 fi
-export PATH="$PATH:/home/caphe/iothackbot/bin"
+if [ -d "$HOME/iothackbot/bin" ]; then
+    export PATH="$PATH:$HOME/iothackbot/bin"
+fi
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Optional local PAI checkout.
+if [ -f "$HOME/.claude/PAI/Tools/pai.ts" ]; then
+    alias pai='bun "$HOME/.claude/PAI/Tools/pai.ts"'
+fi

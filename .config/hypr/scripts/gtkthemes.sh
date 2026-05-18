@@ -11,11 +11,15 @@ SCHEMA='gsettings set org.gnome.desktop.interface'
 
 apply_themes() {
 	${SCHEMA} gtk-theme "$THEME"
+	${SCHEMA} color-scheme 'prefer-dark'
 	${SCHEMA} icon-theme "$ICONS"
 	${SCHEMA} cursor-theme "$CURSOR"
 	#${SCHEMA} font-name "$FONT"
 }
 
+${SCHEMA} color-scheme 'prefer-dark'
 # apply_themes
 # hyprctl setcursor $CURSOR
-paplay ~/Music/sounds/startup.wav
+if [ -f "$HOME/Music/sounds/startup.wav" ]; then
+	paplay "$HOME/Music/sounds/startup.wav"
+fi

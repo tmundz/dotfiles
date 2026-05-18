@@ -1,0 +1,2 @@
+# Add Python CLI packages here, one per line.
+# The installer uses pipx, not global pip.

@@ -1,0 +1,148 @@
+@import "mocha.css"; /* Importing the color variables */
+
+/* Base Font Settings */
+* {
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", "Font Awesome 6 Brands", monospace;
+  font-size: 14px;
+  color: @text; /* Default Text Color */
+}
+
+/* Bar Background and General Module Styling */
+window {
+  background-color: @base; /* Dark background */
+  border-bottom: 2px solid @pink; /* Bottom border */
+  color: @text;
+  padding: 0 10px; /* Adds padding around the modules */
+}
+
+/* Modules Style */
+#cpu,
+#memory,
+#disk,
+#pulseaudio,
+#battery,
+#network,
+#vpn,
+#clock,
+#tray,
+#temperature {
+  background-color: @base;
+  color: @pink; /* Light pink text color */
+  border-radius: 5px;
+  padding: 6px;
+  margin: 4px; /* Space between elements */
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
+}
+
+/* Workspaces Styling */
+#hyprland-workspaces button {
+  background-color: @surface0;
+  color: @pink;
+  margin: 2px;
+  padding: 5px;
+  border-radius: 4px;
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
+}
+
+#hyprland-workspaces button.focused {
+  background-color: @pink;
+  color: @base; /* Dark text on light background */
+}
+
+#hyprland-workspaces button.urgent {
+  background-color: @red;
+  color: @text;
+}
+
+/* Battery Module */
+#battery {
+  color: @green; /* Default battery color */
+}
+
+#battery.good {
+  color: @mauve; /* pink for good battery */
+}
+
+#battery.warning {
+  color: @red; /* Red for warning */
+}
+
+#battery.charging {
+  color: @green; /* Green for charging */
+}
+
+#battery.critical {
+  color: @red; /* Red for critical */
+}
+
+/* Tray Icons */
+#tray {
+  /* Customize if needed */
+}
+
+/* Network Module */
+#network {
+  color: @pink; /* pink for network */
+}
+
+/* Sound Module */
+#pulseaudio {
+  color: @peach; /* Orange for sound */
+}
+
+/* Clock Styling */
+#clock {
+  color: @pink; /* pink for clock */
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
+}
+
+/* Custom Arch Logo */
+#custom-arch {
+  color: @pink; /* Light pink */
+  font-size: 16px; /* Slightly larger for logo */
+}
+
+/* Custom Power Menu */
+#custom-powermenu {
+  color: @pink; /* pink for power off */
+  font-size: 16px;
+}
+
+/* CPU/GPU Toggle Module */
+#custom-cpu-gpu {
+  background-color: @base;
+  color: @pink;
+  border-radius: 5px;
+  padding: 6px;
+  margin: 4px;
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
+}
+
+#custom-cpu-gpu.gpu {
+  color: @mauve;
+}
+
+/* Weather Module */
+#custom-weather {
+  background-color: @base;
+  color: @sky;
+  border-radius: 5px;
+  padding: 6px;
+  margin: 4px;
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free";
+}
+
+/* Moon Phase Module */
+#custom-moon {
+  background-color: @base;
+  color: @lavender;
+  border-radius: 5px;
+  padding: 6px;
+  margin: 4px;
+}
+
+/* Tooltip for Clock */
+#clock:hover {
+  background-color: @surface1;
+  color: @subtext1;
+}
