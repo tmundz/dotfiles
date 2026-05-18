@@ -1,5 +1,6 @@
 brave-bin
 candy-icons-git
+google-chrome
 paru
 spotify
 visual-studio-code-bin

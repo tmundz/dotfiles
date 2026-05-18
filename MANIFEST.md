@@ -54,6 +54,7 @@
 - `packages/pacman-essential.txt`
 - `packages/aur-essential.txt`
 - `packages/pipx.txt`
+- `packages/npm.txt`
 - `packages/pacman-hacking.txt`
 - `packages/aur-hacking.txt`
 - `packages/pipx-hacking.txt`

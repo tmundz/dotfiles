@@ -17,9 +17,11 @@ Review the files first, then run:
 
 The installer creates timestamped backups for existing files before symlinking.
 It opens an interactive menu for a recommended desktop setup, a full setup with
-hacking tools, package-only installs, dotfile linking, and Hyprland monitor
-configuration. It can bootstrap `paru` from the AUR, install Python CLI tools
-through `pipx`, and write a single-monitor or two-monitor Hyprland layout.
+hacking tools, package-only installs, a missing-essentials repair path, dotfile
+linking, and Hyprland monitor configuration. It can bootstrap `paru` from the
+AUR, install Python CLI tools through `pipx`, install global npm tools, set zsh
+as the login shell, enable Docker, add the user to available desktop/dev/admin
+groups, and write a single-monitor or two-monitor Hyprland layout.
 The single-monitor profile targets `eDP-1`; the two-monitor profile targets
 `HDMI-A-1` and `HDMI-A-2`. The monitor menu can also use live `hyprctl`
 detection or custom output names when the machine differs.
@@ -28,6 +30,7 @@ Non-interactive shortcuts:
 
 ```sh
 ./install.sh --check
+./install.sh --fix-missing
 ./install.sh --desktop
 ./install.sh --full
 ```
@@ -37,6 +40,7 @@ Non-interactive shortcuts:
 - `packages/pacman-essential.txt` is the clean restore set used by `install.sh`.
 - `packages/aur-essential.txt` is the clean AUR restore set used by `install.sh`.
 - `packages/pipx.txt` is for Python CLI tools installed through `pipx`.
+- `packages/npm.txt` is for global npm CLI tools installed through `npm`.
 - `packages/pacman-hacking.txt` is the optional repo security/mobile/firmware tool set.
 - `packages/aur-hacking.txt` is the optional AUR security/mobile/firmware tool set.
 - `packages/pipx-hacking.txt` is the optional Python security/mobile tool set.

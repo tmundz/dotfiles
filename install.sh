@@ -198,6 +198,36 @@ install_pacman_packages() {
     ok "Installed $label pacman package set"
 }
 
+install_missing_pacman_packages() {
+    local package_file="$1"
+    local label="$2"
+    local package
+    local missing=()
+    mapfile -t packages < <(read_packages "$package_file")
+
+    [ "${#packages[@]}" -gt 0 ] || {
+        warn "No $label pacman packages listed"
+        return 0
+    }
+
+    for package in "${packages[@]}"; do
+        pacman -Qq "$package" >/dev/null 2>&1 || missing+=("$package")
+    done
+
+    [ "${#missing[@]}" -gt 0 ] || {
+        ok "No missing $label pacman packages"
+        return 0
+    }
+
+    if package_list_contains "steam" "${missing[@]}"; then
+        enable_multilib_repo
+    fi
+
+    section "Installing missing $label pacman packages"
+    sudo pacman -Syu --needed "${missing[@]}"
+    ok "Installed missing $label pacman packages"
+}
+
 bootstrap_paru() {
     if command -v paru >/dev/null 2>&1; then
         ok "paru is already installed"
@@ -244,6 +274,37 @@ install_aur_packages() {
     ok "Finished $label AUR package set"
 }
 
+install_missing_aur_packages() {
+    local package_file="$1"
+    local label="$2"
+    local package
+    local missing=()
+    mapfile -t packages < <(read_packages "$package_file" | sed '/^paru$/d')
+
+    [ "${#packages[@]}" -gt 0 ] || {
+        warn "No $label AUR packages listed"
+        return 0
+    }
+
+    bootstrap_paru
+
+    for package in "${packages[@]}"; do
+        paru -Qq "$package" >/dev/null 2>&1 || missing+=("$package")
+    done
+
+    [ "${#missing[@]}" -gt 0 ] || {
+        ok "No missing $label AUR packages"
+        return 0
+    }
+
+    section "Installing missing $label AUR packages"
+    for package in "${missing[@]}"; do
+        printf '%s\n' "${dim}AUR: $package${reset}"
+        paru -S --needed "$package" || warn "Failed to install AUR package: $package"
+    done
+    ok "Finished missing $label AUR packages"
+}
+
 install_pipx_packages() {
     local package_file="$1"
     local label="$2"
@@ -263,6 +324,213 @@ install_pipx_packages() {
         pipx install "$package" || pipx upgrade "$package" || warn "Failed to install pipx package: $package"
     done
     ok "Finished $label pipx tool set"
+}
+
+install_missing_pipx_packages() {
+    local package_file="$1"
+    local label="$2"
+    local package
+    local missing=()
+    mapfile -t packages < <(read_packages "$package_file")
+
+    [ "${#packages[@]}" -gt 0 ] || {
+        warn "No $label pipx packages listed"
+        return 0
+    }
+
+    command -v pipx >/dev/null 2>&1 || die "pipx is not installed. Install normal pacman essentials first."
+
+    for package in "${packages[@]}"; do
+        pipx list --short 2>/dev/null | awk '{print $1}' | grep -Fxq "$package" || missing+=("$package")
+    done
+
+    [ "${#missing[@]}" -gt 0 ] || {
+        ok "No missing $label pipx tools"
+        return 0
+    }
+
+    section "Installing missing $label pipx tools"
+    pipx ensurepath
+    for package in "${missing[@]}"; do
+        printf '%s\n' "${dim}pipx: $package${reset}"
+        pipx install "$package" || warn "Failed to install pipx package: $package"
+    done
+    ok "Finished missing $label pipx tools"
+}
+
+install_npm_packages() {
+    local package_file="$1"
+    local label="$2"
+    local package
+    mapfile -t packages < <(read_packages "$package_file")
+
+    [ "${#packages[@]}" -gt 0 ] || {
+        warn "No $label npm packages listed"
+        return 0
+    }
+
+    command -v npm >/dev/null 2>&1 || die "npm is not installed. Install normal pacman essentials first."
+
+    section "Installing $label npm packages"
+    for package in "${packages[@]}"; do
+        printf '%s\n' "${dim}npm: $package${reset}"
+        sudo npm install -g "$package" || warn "Failed to install npm package: $package"
+    done
+    ok "Finished $label npm package set"
+}
+
+install_missing_npm_packages() {
+    local package_file="$1"
+    local label="$2"
+    local package
+    local missing=()
+    mapfile -t packages < <(read_packages "$package_file")
+
+    [ "${#packages[@]}" -gt 0 ] || {
+        warn "No $label npm packages listed"
+        return 0
+    }
+
+    command -v npm >/dev/null 2>&1 || die "npm is not installed. Install normal pacman essentials first."
+
+    for package in "${packages[@]}"; do
+        npm list -g "$package" --depth=0 >/dev/null 2>&1 || missing+=("$package")
+    done
+
+    [ "${#missing[@]}" -gt 0 ] || {
+        ok "No missing $label npm packages"
+        return 0
+    }
+
+    section "Installing missing $label npm packages"
+    for package in "${missing[@]}"; do
+        printf '%s\n' "${dim}npm: $package${reset}"
+        sudo npm install -g "$package" || warn "Failed to install npm package: $package"
+    done
+    ok "Finished missing $label npm packages"
+}
+
+target_install_user() {
+    if [ -n "${SUDO_USER:-}" ] && [ "${SUDO_USER:-}" != "root" ]; then
+        printf '%s\n' "$SUDO_USER"
+    else
+        id -un
+    fi
+}
+
+ensure_zsh_login_shell() {
+    local user shell current_shell
+
+    user="$(target_install_user)"
+    shell="$(command -v zsh || true)"
+
+    [ -n "$shell" ] || {
+        warn "zsh is not installed yet; cannot set login shell"
+        return 0
+    }
+
+    if ! grep -Fxq "$shell" /etc/shells 2>/dev/null; then
+        printf '%s\n' "$shell" | sudo tee -a /etc/shells >/dev/null
+    fi
+
+    current_shell="$(getent passwd "$user" | cut -d: -f7)"
+    if [ "$(readlink -f "$current_shell" 2>/dev/null || printf '%s\n' "$current_shell")" = "$(readlink -f "$shell")" ]; then
+        ok "$user login shell is already zsh"
+        return 0
+    fi
+
+    sudo chsh -s "$shell" "$user"
+    ok "Set $user login shell to $shell"
+}
+
+ensure_system_group() {
+    local group="$1"
+
+    getent group "$group" >/dev/null 2>&1 && return 0
+    sudo groupadd --system "$group" || warn "Could not create $group group"
+}
+
+add_user_to_groups() {
+    local user group
+    local groups=(
+        wheel
+        docker
+        wireshark
+        video
+        render
+        input
+        audio
+        storage
+        optical
+        power
+        network
+        lp
+        scanner
+        uucp
+        adbusers
+        kvm
+        libvirt
+        realtime
+    )
+
+    user="$(target_install_user)"
+    ensure_system_group "docker"
+    ensure_system_group "wireshark"
+
+    for group in "${groups[@]}"; do
+        if getent group "$group" >/dev/null 2>&1; then
+            sudo usermod -aG "$group" "$user"
+        fi
+    done
+
+    ok "Added $user to available desktop/dev/admin groups"
+    warn "Group changes require logging out and back in before they fully apply"
+}
+
+enable_systemd_service() {
+    local service="$1"
+
+    command -v systemctl >/dev/null 2>&1 || return 0
+    systemctl list-unit-files "$service" >/dev/null 2>&1 || return 0
+    sudo systemctl enable --now "$service" || warn "Could not enable $service"
+}
+
+configure_wireshark_capture() {
+    local dumpcap
+
+    dumpcap="$(command -v dumpcap || true)"
+    [ -n "$dumpcap" ] || return 0
+    command -v setcap >/dev/null 2>&1 || {
+        warn "setcap is not available; skipping dumpcap capture permissions"
+        return 0
+    }
+
+    sudo setcap cap_net_raw,cap_net_admin=eip "$dumpcap" || warn "Could not set dumpcap capture permissions"
+}
+
+configure_system_access() {
+    section "Configuring shell, permissions, and services"
+    ensure_zsh_login_shell
+    add_user_to_groups
+    enable_systemd_service "NetworkManager.service"
+    enable_systemd_service "docker.service"
+    configure_wireshark_capture
+    ok "System access setup complete"
+}
+
+fix_executable_bits() {
+    local file
+
+    section "Fixing executable permissions"
+    while IFS= read -r -d '' file; do
+        [ -e "$file" ] || continue
+        chmod +x "$file"
+    done < <(
+        find "$repo_dir/.config/hypr/scripts" "$repo_dir/.config/waybar/scripts" -type f -print0 2>/dev/null
+        find "$repo_dir/.config/rofi/launchers" -name '*.sh' -type f -print0 2>/dev/null
+        printf '%s\0' "$repo_dir/install.sh" "$repo_dir/.config/wlogout/launch.sh"
+    )
+    ok "Executable bits fixed"
 }
 
 link_file() {
@@ -296,6 +564,31 @@ link_dotfiles() {
     done < <(find "$repo_dir" -type f -print0)
 
     ok "Dotfiles linked"
+}
+
+link_missing_dotfiles() {
+    local file dst linked=0
+
+    section "Linking missing dotfiles"
+
+    while IFS= read -r -d '' file; do
+        case "${file#$repo_dir/}" in
+            .git/*|.gitignore|README.md|MANIFEST.md|install.sh|packages/*)
+                continue
+                ;;
+        esac
+
+        dst="$HOME/${file#$repo_dir/}"
+        if [ -e "$dst" ] || [ -L "$dst" ]; then
+            continue
+        fi
+
+        mkdir -p "$(dirname "$dst")"
+        ln -s "$file" "$dst"
+        linked=$((linked + 1))
+    done < <(find "$repo_dir" -type f -print0)
+
+    ok "Linked $linked missing dotfiles"
 }
 
 write_hypr_single_monitor() {
@@ -431,12 +724,23 @@ install_normal_packages() {
     install_pacman_packages "$repo_dir/packages/pacman-essential.txt" "normal"
     install_aur_packages "$repo_dir/packages/aur-essential.txt" "normal"
     install_pipx_packages "$repo_dir/packages/pipx.txt" "normal"
+    install_npm_packages "$repo_dir/packages/npm.txt" "normal"
 }
 
 install_hacking_packages() {
     install_pacman_packages "$repo_dir/packages/pacman-hacking.txt" "hacking"
     install_aur_packages "$repo_dir/packages/aur-hacking.txt" "hacking"
     install_pipx_packages "$repo_dir/packages/pipx-hacking.txt" "hacking"
+}
+
+fix_missing_essentials() {
+    install_missing_pacman_packages "$repo_dir/packages/pacman-essential.txt" "normal"
+    install_missing_aur_packages "$repo_dir/packages/aur-essential.txt" "normal"
+    install_missing_pipx_packages "$repo_dir/packages/pipx.txt" "normal"
+    install_missing_npm_packages "$repo_dir/packages/npm.txt" "normal"
+    configure_system_access
+    fix_executable_bits
+    link_missing_dotfiles
 }
 
 package_menu() {
@@ -448,21 +752,27 @@ package_menu() {
         printf '  %s1%s  Install normal pacman packages (%s)\n' "$bold" "$reset" "$(print_package_count "$repo_dir/packages/pacman-essential.txt")"
         printf '  %s2%s  Install normal AUR packages (%s)\n' "$bold" "$reset" "$(print_package_count "$repo_dir/packages/aur-essential.txt")"
         printf '  %s3%s  Install normal pipx tools (%s)\n' "$bold" "$reset" "$(print_package_count "$repo_dir/packages/pipx.txt")"
-        printf '  %s4%s  Install hacking pacman packages (%s)\n' "$bold" "$reset" "$(print_package_count "$repo_dir/packages/pacman-hacking.txt")"
-        printf '  %s5%s  Install hacking AUR packages (%s)\n' "$bold" "$reset" "$(print_package_count "$repo_dir/packages/aur-hacking.txt")"
-        printf '  %s6%s  Install hacking pipx tools (%s)\n' "$bold" "$reset" "$(print_package_count "$repo_dir/packages/pipx-hacking.txt")"
-        printf '  %s7%s  Back\n' "$bold" "$reset"
+        printf '  %s4%s  Install normal npm packages (%s)\n' "$bold" "$reset" "$(print_package_count "$repo_dir/packages/npm.txt")"
+        printf '  %s5%s  Install hacking pacman packages (%s)\n' "$bold" "$reset" "$(print_package_count "$repo_dir/packages/pacman-hacking.txt")"
+        printf '  %s6%s  Install hacking AUR packages (%s)\n' "$bold" "$reset" "$(print_package_count "$repo_dir/packages/aur-hacking.txt")"
+        printf '  %s7%s  Install hacking pipx tools (%s)\n' "$bold" "$reset" "$(print_package_count "$repo_dir/packages/pipx-hacking.txt")"
+        printf '  %s8%s  Configure zsh, permissions, and services\n' "$bold" "$reset"
+        printf '  %s9%s  Fix missing essentials\n' "$bold" "$reset"
+        printf '  %s10%s Back\n' "$bold" "$reset"
         printf '\n'
-        read -r -p "Choose [1-7]: " choice
+        read -r -p "Choose [1-10]: " choice
 
         case "$choice" in
             1) install_pacman_packages "$repo_dir/packages/pacman-essential.txt" "normal"; pause ;;
             2) install_aur_packages "$repo_dir/packages/aur-essential.txt" "normal"; pause ;;
             3) install_pipx_packages "$repo_dir/packages/pipx.txt" "normal"; pause ;;
-            4) install_pacman_packages "$repo_dir/packages/pacman-hacking.txt" "hacking"; pause ;;
-            5) install_aur_packages "$repo_dir/packages/aur-hacking.txt" "hacking"; pause ;;
-            6) install_pipx_packages "$repo_dir/packages/pipx-hacking.txt" "hacking"; pause ;;
-            7) return 0 ;;
+            4) install_npm_packages "$repo_dir/packages/npm.txt" "normal"; pause ;;
+            5) install_pacman_packages "$repo_dir/packages/pacman-hacking.txt" "hacking"; pause ;;
+            6) install_aur_packages "$repo_dir/packages/aur-hacking.txt" "hacking"; pause ;;
+            7) install_pipx_packages "$repo_dir/packages/pipx-hacking.txt" "hacking"; pause ;;
+            8) configure_system_access; pause ;;
+            9) fix_missing_essentials; pause ;;
+            10) return 0 ;;
             *) warn "Invalid choice"; pause ;;
         esac
     done
@@ -470,6 +780,8 @@ package_menu() {
 
 recommended_desktop_setup() {
     install_normal_packages
+    configure_system_access
+    fix_executable_bits
     link_dotfiles
     configure_hypr_monitors
     activate_desktop_settings
@@ -478,6 +790,8 @@ recommended_desktop_setup() {
 full_setup() {
     install_normal_packages
     install_hacking_packages
+    configure_system_access
+    fix_executable_bits
     link_dotfiles
     configure_hypr_monitors
     activate_desktop_settings
@@ -607,6 +921,21 @@ check_pipx_packages() {
     fi
 }
 
+check_npm_packages() {
+    local file="$1"
+    local label="$2"
+    local count
+
+    count="$(print_package_count "$repo_dir/$file")"
+    if [ "$count" -eq 0 ]; then
+        check_ok "$label npm package file is empty"
+    elif command -v npm >/dev/null 2>&1; then
+        check_ok "npm is available for $label npm packages ($count listed)"
+    else
+        check_warn "npm is not installed yet; install normal pacman packages before $label npm packages"
+    fi
+}
+
 check_executable_bits() {
     local file
     local missing=0
@@ -726,6 +1055,7 @@ check_dotfiles() {
     check_package_file "packages/pacman-essential.txt" "normal pacman"
     check_package_file "packages/aur-essential.txt" "normal AUR"
     check_package_file "packages/pipx.txt" "normal pipx"
+    check_package_file "packages/npm.txt" "normal npm"
     check_package_file "packages/pacman-hacking.txt" "hacking pacman"
     check_package_file "packages/aur-hacking.txt" "hacking AUR"
     check_package_file "packages/pipx-hacking.txt" "hacking pipx"
@@ -738,6 +1068,9 @@ check_dotfiles() {
     check_command_exists "makepkg"
     check_command_exists "rg"
     check_command_exists "pipx"
+    check_command_exists "npm"
+    check_command_exists "node"
+    check_command_exists "zsh"
     check_command_exists "paru"
 
     section "Package availability"
@@ -747,6 +1080,7 @@ check_dotfiles() {
     check_aur_packages "packages/aur-hacking.txt" "hacking"
     check_pipx_packages "packages/pipx.txt" "normal"
     check_pipx_packages "packages/pipx-hacking.txt" "hacking"
+    check_npm_packages "packages/npm.txt" "normal"
 
     section "Config sanity"
     check_executable_bits
@@ -784,13 +1118,15 @@ main_menu() {
         printf '  %s2%s  Full setup with hacking tools\n' "$bold" "$reset"
         printf '      normal setup plus security, Android, and firmware tools\n'
         printf '  %s3%s  Package menu\n' "$bold" "$reset"
-        printf '      install normal/hacking pacman, AUR, or pipx sets separately\n'
+        printf '      install normal/hacking pacman, AUR, pipx, or npm sets separately\n'
         printf '  %s4%s  Link dotfiles only\n' "$bold" "$reset"
         printf '  %s5%s  Configure Hyprland monitors only\n' "$bold" "$reset"
         printf '  %s6%s  Apply dark mode and icon theme only\n' "$bold" "$reset"
-        printf '  %s7%s  Exit\n' "$bold" "$reset"
+        printf '  %s7%s  Fix missing essentials\n' "$bold" "$reset"
+        printf '      install absent normal packages/tools and repair shell, groups, services, permissions\n'
+        printf '  %s8%s  Exit\n' "$bold" "$reset"
         printf '\n'
-        read -r -p "Choose [1-7]: " choice
+        read -r -p "Choose [1-8]: " choice
 
         case "$choice" in
             1) recommended_desktop_setup; finish_message; return 0 ;;
@@ -799,7 +1135,8 @@ main_menu() {
             4) link_dotfiles; finish_message; return 0 ;;
             5) configure_hypr_monitors; finish_message; return 0 ;;
             6) activate_desktop_settings; finish_message; return 0 ;;
-            7) info "No changes made"; return 0 ;;
+            7) fix_missing_essentials; finish_message; return 0 ;;
+            8) info "No changes made"; return 0 ;;
             *) warn "Invalid choice"; pause ;;
         esac
     done
@@ -823,6 +1160,12 @@ main() {
 
     if [ "${1:-}" = "--desktop" ]; then
         recommended_desktop_setup
+        finish_message
+        return 0
+    fi
+
+    if [ "${1:-}" = "--fix-missing" ]; then
+        fix_missing_essentials
         finish_message
         return 0
     fi

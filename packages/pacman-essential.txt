@@ -6,7 +6,10 @@ bluez-utils
 brightnessctl
 btop
 cliphist
+chromium
 discord
+docker
+docker-compose
 fd
 fastfetch
 fzf
@@ -22,9 +25,12 @@ lazygit
 mako
 neovim
 networkmanager
+nodejs
 noto-fonts
 noto-fonts-emoji
+npm
 nwg-look
+pcmanfm
 pipewire
 pipewire-alsa
 pipewire-pulse
@@ -45,5 +51,6 @@ wireplumber
 wl-clipboard
 xdg-desktop-portal-hyprland
 xsettingsd
+wireshark-qt
 zip
 zsh
