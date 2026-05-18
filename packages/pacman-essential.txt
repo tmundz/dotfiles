@@ -6,6 +6,7 @@ bluez-utils
 brightnessctl
 btop
 cliphist
+discord
 fd
 fastfetch
 fzf
@@ -32,6 +33,7 @@ python-pipx
 ripgrep
 rofi
 slurp
+steam
 sudo
 swappy
 tmux

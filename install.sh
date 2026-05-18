@@ -31,7 +31,9 @@ line() {
 }
 
 clear_screen() {
-    [ -t 1 ] && command -v clear >/dev/null 2>&1 && clear
+    if [ -t 1 ] && command -v clear >/dev/null 2>&1; then
+        clear
+    fi
 }
 
 banner() {
@@ -98,6 +100,80 @@ read_packages() {
     sed -e 's/#.*//' -e '/^[[:space:]]*$/d' "$file"
 }
 
+package_list_contains() {
+    local wanted="$1"
+    shift
+    local package
+
+    for package in "$@"; do
+        [ "$package" = "$wanted" ] && return 0
+    done
+
+    return 1
+}
+
+pacman_repo_enabled() {
+    local repo="$1"
+
+    command -v pacman-conf >/dev/null 2>&1 || return 1
+    pacman-conf --repo-list 2>/dev/null | grep -Fxq "$repo"
+}
+
+enable_multilib_repo() {
+    local tmp_conf
+
+    pacman_repo_enabled "multilib" && {
+        ok "pacman multilib repository is already enabled"
+        return 0
+    }
+
+    [ -f /etc/pacman.conf ] || die "/etc/pacman.conf not found; cannot enable multilib for steam"
+
+    section "Enabling pacman multilib repository"
+    tmp_conf="$(mktemp)"
+    awk '
+        BEGIN {
+            in_multilib = 0
+            saw_multilib = 0
+            saw_include = 0
+        }
+        /^[[:space:]]*#?[[:space:]]*\[multilib\][[:space:]]*$/ {
+            print "[multilib]"
+            in_multilib = 1
+            saw_multilib = 1
+            next
+        }
+        in_multilib && /^[[:space:]]*\[/ {
+            if (!saw_include) {
+                print "Include = /etc/pacman.d/mirrorlist"
+                saw_include = 1
+            }
+            in_multilib = 0
+        }
+        in_multilib && /^[[:space:]]*#?[[:space:]]*Include[[:space:]]*=[[:space:]]*\/etc\/pacman\.d\/mirrorlist[[:space:]]*$/ {
+            print "Include = /etc/pacman.d/mirrorlist"
+            saw_include = 1
+            next
+        }
+        { print }
+        END {
+            if (in_multilib && !saw_include) {
+                print "Include = /etc/pacman.d/mirrorlist"
+            }
+            if (!saw_multilib) {
+                print ""
+                print "[multilib]"
+                print "Include = /etc/pacman.d/mirrorlist"
+            }
+        }
+    ' /etc/pacman.conf > "$tmp_conf"
+
+    sudo install -m 644 "$tmp_conf" /etc/pacman.conf
+    rm -f "$tmp_conf"
+    sudo pacman -Sy
+    ok "pacman multilib repository enabled"
+}
+
 print_package_count() {
     local file="$1"
     read_packages "$file" | wc -l | tr -d ' '
@@ -112,6 +188,10 @@ install_pacman_packages() {
         warn "No $label pacman packages listed"
         return 0
     }
+
+    if package_list_contains "steam" "${packages[@]}"; then
+        enable_multilib_repo
+    fi
 
     section "Installing $label pacman packages"
     sudo pacman -Syu --needed "${packages[@]}"
@@ -461,6 +541,7 @@ check_pacman_packages() {
     local label="$2"
     local package
     local missing=0
+    local steam_needs_multilib=0
 
     if ! command -v pacman >/dev/null 2>&1; then
         check_warn "pacman is unavailable; skipping $label package validation"
@@ -468,6 +549,12 @@ check_pacman_packages() {
     fi
 
     while IFS= read -r package; do
+        if [ "$package" = "steam" ] && ! pacman_repo_enabled "multilib"; then
+            check_warn "multilib is disabled; installer will enable it before installing steam"
+            steam_needs_multilib=1
+            continue
+        fi
+
         if ! pacman -Si "$package" >/dev/null 2>&1; then
             check_fail "$label pacman package not found: $package"
             missing=$((missing + 1))
@@ -475,7 +562,11 @@ check_pacman_packages() {
     done < <(read_packages "$repo_dir/$file")
 
     if [ "$missing" -eq 0 ]; then
-        check_ok "$label pacman packages resolve"
+        if [ "$steam_needs_multilib" -eq 1 ]; then
+            check_ok "$label pacman packages resolve, except steam pending multilib enablement"
+        else
+            check_ok "$label pacman packages resolve"
+        fi
     fi
 }
 

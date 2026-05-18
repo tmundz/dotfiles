@@ -1,6 +1,7 @@
 brave-bin
 candy-icons-git
 paru
+spotify
 visual-studio-code-bin
 wlogout
 zen-browser-bin
