@@ -1,0 +1,4 @@
+interface:
+  display_name: "WebSocket Security Testing"
+  short_description: "WebSocket security testing and exploitation"
+  default_prompt: "Help me test this WebSocket endpoint for vulnerabilities"

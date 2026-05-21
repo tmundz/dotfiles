@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web Scraping"
+  short_description: "Progressive web scraping with bot detection bypass"
+  default_prompt: "Scrape this URL for me"

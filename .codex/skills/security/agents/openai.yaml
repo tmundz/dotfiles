@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Assessment & Intelligence"
+  short_description: "Recon, web pentesting, and threat intelligence"
+  default_prompt: "Help me assess the security of this target"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web Bug Bounty SAML"
+  short_description: "CLI-native SAML web hacking workflow"
+  default_prompt: "Use $web-bugbounty-saml to test an authorized SAML SSO target with CLI-native workflows."

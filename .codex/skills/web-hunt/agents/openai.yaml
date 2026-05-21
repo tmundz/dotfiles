@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web Hacking & Bug Bounty"
+  short_description: "Web security testing and bug bounty hunting"
+  default_prompt: "Help me find vulnerabilities in this target"

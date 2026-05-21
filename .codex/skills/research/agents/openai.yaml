@@ -1,0 +1,4 @@
+interface:
+  display_name: "Multi-Agent Research"
+  short_description: "Parallel multi-agent research with synthesis"
+  default_prompt: "Research this topic thoroughly"

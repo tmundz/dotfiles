@@ -1,0 +1,4 @@
+interface:
+  display_name: "Content Analysis & Wisdom Extraction"
+  short_description: "Extract wisdom from videos, podcasts, and articles"
+  default_prompt: "Extract the key insights from this content"

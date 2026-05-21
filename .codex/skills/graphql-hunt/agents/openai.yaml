@@ -1,0 +1,4 @@
+interface:
+  display_name: "GraphQL Security Testing"
+  short_description: "Advanced GraphQL pentesting and exploitation"
+  default_prompt: "Help me test this GraphQL endpoint for vulnerabilities"

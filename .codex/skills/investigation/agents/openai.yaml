@@ -1,0 +1,4 @@
+interface:
+  display_name: "OSINT & Investigation"
+  short_description: "OSINT investigations and people-finding"
+  default_prompt: "Help me investigate this person or organization"
