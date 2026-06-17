@@ -2,10 +2,10 @@
     "layer": "top",
     "position": "top",
     "mod": "dock",
-    "font": "JetBrainsMono Nerd Font 12",
+    "font": "JetBrainsMono Nerd Font 10",
     "exclusive": true,
-    "height": 34,
-    "spacing": 6,
+    "height": 27,
+    "spacing": 5,
     "modules-left": [
         "custom/arch",
         "custom/cpu-gpu",
@@ -147,7 +147,6 @@
         "format-disconnected": "󰤮 Offline",
         "format-alt": "{icon} {bandwidthDownBits}",
         "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
-        "on-click": "nmcli radio wifi | grep -q enabled && nmcli radio wifi off || nmcli radio wifi on",
         "on-click-right": "ghostty -e nmtui"
     },
 
@@ -197,7 +196,7 @@
     },
 
     "tray": {
-        "icon-size": 18,
+        "icon-size": 14,
         "spacing": 8
     }
 }

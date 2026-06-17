@@ -831,6 +831,12 @@ install_zen_policies() {
     ok "Zen will install Proton Pass on next launch ($zen_dir/distribution)"
 }
 
+apply_browser_setup() {
+    install_browser_policies
+    install_zen_policies
+    info "Fully restart your browsers; check chrome://policy to confirm. Logins stay fresh — sign in once to sync."
+}
+
 install_normal_packages() {
     install_pacman_packages "$repo_dir/packages/pacman-essential.txt" "normal"
     install_aur_packages "$repo_dir/packages/aur-essential.txt" "normal"
@@ -1412,6 +1418,17 @@ finish_message() {
     printf '%sDone.%s\n' "$green" "$reset"
 }
 
+update_configs() {
+    [ -d "$repo_dir/.git" ] || {
+        warn "$repo_dir is not a git repo"
+        return 0
+    }
+    section "Updating configs from upstream"
+    git -C "$repo_dir" pull --ff-only || warn "Could not fast-forward pull"
+    copy_dotfiles
+    ok "Configs updated"
+}
+
 main_menu() {
     local choice
 
@@ -1429,9 +1446,11 @@ main_menu() {
         printf '  %s7%s  Fix missing essentials\n' "$bold" "$reset"
         printf '      install absent normal packages/tools and repair shell, groups, services, permissions\n'
         printf '  %s8%s  Laptop setup (power, thermal, bluetooth)\n' "$bold" "$reset"
-        printf '  %s9%s  Exit\n' "$bold" "$reset"
+        printf '  %s9%s  Apply saved browser extensions/policies\n' "$bold" "$reset"
+        printf '  %s10%s Update configs (git pull + copy)\n' "$bold" "$reset"
+        printf '  %s11%s Exit\n' "$bold" "$reset"
         printf '\n'
-        read -r -p "Choose [1-9]: " choice
+        read -r -p "Choose [1-11]: " choice
 
         case "$choice" in
             1) recommended_desktop_setup; finish_message; return 0 ;;
@@ -1442,7 +1461,9 @@ main_menu() {
             6) activate_desktop_settings; finish_message; return 0 ;;
             7) fix_missing_essentials; finish_message; return 0 ;;
             8) laptop_setup; finish_message; return 0 ;;
-            9) info "No changes made"; return 0 ;;
+            9) apply_browser_setup; finish_message; return 0 ;;
+            10) update_configs; finish_message; return 0 ;;
+            11) info "No changes made"; return 0 ;;
             *) warn "Invalid choice"; pause ;;
         esac
     done
@@ -1508,6 +1529,18 @@ main() {
 
     if [ "${1:-}" = "--laptop" ]; then
         laptop_setup
+        finish_message
+        return 0
+    fi
+
+    if [ "${1:-}" = "--browsers" ]; then
+        apply_browser_setup
+        finish_message
+        return 0
+    fi
+
+    if [ "${1:-}" = "--update" ]; then
+        update_configs
         finish_message
         return 0
     fi

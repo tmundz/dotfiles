@@ -5,7 +5,7 @@
   border-radius: 0;
   box-shadow: none;
   font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", "Font Awesome 6 Brands", monospace;
-  font-size: 13px;
+  font-size: 10px;
   min-height: 0;
   text-shadow: none;
 }
@@ -45,18 +45,18 @@ tooltip label {
   border: 1px solid @surface1;
   border-radius: 8px;
   color: @text;
-  margin: 4px 2px;
-  padding: 0 10px;
+  margin: 3px 2px;
+  padding: 0 8px;
 }
 
 #custom-arch {
   background: @mauve;
   border-color: @mauve;
   color: @crust;
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 700;
-  margin-left: 8px;
-  padding: 0 12px;
+  margin-left: 6px;
+  padding: 0 10px;
 }
 
 #custom-cpu-gpu {
@@ -74,13 +74,13 @@ tooltip label {
 #window {
   color: @subtext1;
   min-width: 0;
-  padding: 0 12px;
+  padding: 0 10px;
 }
 
 #workspaces {
   background: @surface0;
   border-radius: 8px;
-  margin: 4px 2px;
+  margin: 3px 2px;
   padding: 0 4px;
 }
 
@@ -88,9 +88,9 @@ tooltip label {
   background: transparent;
   border-radius: 6px;
   color: @overlay2;
-  margin: 3px 1px;
-  min-width: 28px;
-  padding: 0 7px;
+  margin: 2px 1px;
+  min-width: 22px;
+  padding: 0 6px;
 }
 
 #workspaces button:hover {
@@ -164,8 +164,8 @@ tooltip label {
 
 #custom-powermenu {
   color: @pink;
-  font-size: 16px;
-  margin-right: 8px;
+  font-size: 13px;
+  margin-right: 6px;
 }
 
 #custom-arch:hover,
