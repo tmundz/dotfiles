@@ -30,7 +30,6 @@ afl++
 sqlmap
 
 # ── VM / lab (kept — virtual machines) ──
-bridge-utils
 vde2
 debootstrap
 libguestfs

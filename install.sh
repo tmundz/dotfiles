@@ -187,6 +187,9 @@ print_package_count() {
 install_pacman_packages() {
     local package_file="$1"
     local label="$2"
+    local package
+    local available=()
+    local missing=()
     mapfile -t packages < <(read_packages "$package_file")
 
     [ "${#packages[@]}" -gt 0 ] || {
@@ -198,8 +201,28 @@ install_pacman_packages() {
         enable_multilib_repo
     fi
 
+    # Refresh the sync db so resolution checks are accurate, then drop any
+    # package pacman can't resolve so one bad name doesn't abort the whole run.
+    sudo pacman -Sy >/dev/null 2>&1 || warn "Could not refresh pacman databases"
+    for package in "${packages[@]}"; do
+        if pacman -Si "$package" >/dev/null 2>&1; then
+            available+=("$package")
+        else
+            missing+=("$package")
+        fi
+    done
+
+    if [ "${#missing[@]}" -gt 0 ]; then
+        warn "Skipping unavailable $label pacman packages: ${missing[*]}"
+    fi
+
+    [ "${#available[@]}" -gt 0 ] || {
+        warn "No installable $label pacman packages"
+        return 0
+    }
+
     section "Installing $label pacman packages"
-    sudo pacman -Syu --needed "${packages[@]}"
+    sudo pacman -Syu --needed "${available[@]}"
     ok "Installed $label pacman package set"
 }
 
