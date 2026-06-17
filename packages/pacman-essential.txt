@@ -14,6 +14,7 @@ fd
 fastfetch
 fzf
 ghostty
+alacritty
 git
 grim
 hypridle
@@ -54,3 +55,8 @@ xsettingsd
 wireshark-qt
 zip
 zsh
+
+# virtual machines
+qemu-full
+libvirt
+virt-manager

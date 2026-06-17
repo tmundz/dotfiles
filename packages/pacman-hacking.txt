@@ -1,33 +1,64 @@
-afl++
-android-file-transfer
-android-tools
-android-udev
-binwalk
-bind
-clang
-cmake
-dtc
-flashrom
-gdb
-ghidra
-go
-gobuster
-hashcat
-jadx
-john
-masscan
-metasploit
-nikto
+# ── Recon / network ──
 nmap
-openbsd-netcat
-openocd
-qemu-full
-radare2
-scrcpy
-smali
-sqlmap
-squashfs-tools
+masscan
+gobuster
+nikto
 sslscan
 testssl.sh
-uboot-tools
-wireshark-qt
+bind
+openbsd-netcat
+
+# ── Wireless / wifi ──
+hostapd
+dnsmasq
+wpa_supplicant
+
+# ── Passwords ──
+hashcat
+john
+
+# ── Exploitation ──
+metasploit
+
+# ── Reverse engineering ──
+ghidra
+radare2
+gdb
+afl++
+
+# ── Web / app ──
+sqlmap
+
+# ── VM / lab (kept — virtual machines) ──
+bridge-utils
+vde2
+debootstrap
+libguestfs
+
+# ── Build / toolchain ──
+clang
+cmake
+go
+
+# ── Misc / auth ──
+libfido2
+
+# ── Android / mobile (commented out for now) ──
+#android-tools
+#android-file-transfer
+#android-udev
+#scrcpy
+#jadx
+#smali
+
+# ── IoT / firmware / hardware (commented out — revisit for IoT work) ──
+#binwalk
+#flashrom
+#openocd
+#dtc
+#uboot-tools
+#picocom
+#python-pyserial
+#squashfs-tools
+#aarch64-linux-gnu-binutils
+#aarch64-linux-gnu-gcc

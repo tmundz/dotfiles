@@ -1,0 +1,16 @@
+{
+  "policies": {
+    "ExtensionSettings": {
+      "*": { "installation_mode": "allowed" }
+    },
+    "Extensions": {
+      "Install": [
+        "https://addons.mozilla.org/firefox/downloads/latest/proton-pass/latest.xpi"
+      ]
+    },
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "NoDefaultBookmarks": true
+  }
+}

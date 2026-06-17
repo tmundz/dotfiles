@@ -4,6 +4,11 @@ set -euo pipefail
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 backup_dir="$HOME/.dotfiles-backup/$(date +%Y%m%d_%H%M%S)"
 
+# Claude AI setup (PAI + skills + caveman) — bootstrapped from upstream.
+pai_repo_url="https://github.com/danielmiessler/PAI.git"
+pai_src_dir="${XDG_DATA_HOME:-$HOME/.local/share}/pai-src"
+caveman_marketplace="JuliusBrussee/caveman"
+
 if [ -t 1 ]; then
     bold="$(printf '\033[1m')"
     dim="$(printf '\033[2m')"
@@ -370,11 +375,12 @@ install_npm_packages() {
     }
 
     command -v npm >/dev/null 2>&1 || die "npm is not installed. Install normal pacman essentials first."
+    configure_npm_prefix
 
     section "Installing $label npm packages"
     for package in "${packages[@]}"; do
         printf '%s\n' "${dim}npm: $package${reset}"
-        sudo npm install -g "$package" || warn "Failed to install npm package: $package"
+        npm install -g "$package" || warn "Failed to install npm package: $package"
     done
     ok "Finished $label npm package set"
 }
@@ -392,6 +398,7 @@ install_missing_npm_packages() {
     }
 
     command -v npm >/dev/null 2>&1 || die "npm is not installed. Install normal pacman essentials first."
+    configure_npm_prefix
 
     for package in "${packages[@]}"; do
         npm list -g "$package" --depth=0 >/dev/null 2>&1 || missing+=("$package")
@@ -405,7 +412,7 @@ install_missing_npm_packages() {
     section "Installing missing $label npm packages"
     for package in "${missing[@]}"; do
         printf '%s\n' "${dim}npm: $package${reset}"
-        sudo npm install -g "$package" || warn "Failed to install npm package: $package"
+        npm install -g "$package" || warn "Failed to install npm package: $package"
     done
     ok "Finished missing $label npm packages"
 }
@@ -508,12 +515,39 @@ configure_wireshark_capture() {
     sudo setcap cap_net_raw,cap_net_admin=eip "$dumpcap" || warn "Could not set dumpcap capture permissions"
 }
 
+configure_libvirt() {
+    local conf="/etc/libvirt/libvirtd.conf"
+
+    section "Configuring libvirt / VM access"
+
+    if [ -f "$conf" ]; then
+        # Let members of the libvirt group use the daemon socket without sudo.
+        sudo sed -i \
+            -e 's/^#\?unix_sock_group = .*/unix_sock_group = "libvirt"/' \
+            -e 's/^#\?unix_sock_rw_perms = .*/unix_sock_rw_perms = "0770"/' \
+            "$conf" || warn "Could not edit $conf"
+    else
+        warn "$conf not found; libvirt may not be installed yet"
+    fi
+
+    enable_systemd_service "libvirtd.service"
+
+    # Autostart the default NAT network so VMs get networking out of the box.
+    if command -v virsh >/dev/null 2>&1; then
+        sudo virsh net-autostart default >/dev/null 2>&1 || true
+        sudo virsh net-start default >/dev/null 2>&1 || true
+    fi
+
+    ok "libvirt configured for the libvirt group"
+}
+
 configure_system_access() {
     section "Configuring shell, permissions, and services"
     ensure_zsh_login_shell
     add_user_to_groups
     enable_systemd_service "NetworkManager.service"
     enable_systemd_service "docker.service"
+    configure_libvirt
     configure_wireshark_capture
     ok "System access setup complete"
 }
@@ -533,26 +567,28 @@ fix_executable_bits() {
     ok "Executable bits fixed"
 }
 
-link_file() {
+copy_file() {
     local src="$1"
     local dst="$HOME/${src#$repo_dir/}"
 
     mkdir -p "$(dirname "$dst")"
 
-    if [ -e "$dst" ] || [ -L "$dst" ]; then
-        if [ "$(readlink -f "$dst" 2>/dev/null || true)" = "$src" ]; then
-            return 0
-        fi
+    # Already an identical real copy -> nothing to do.
+    if [ -e "$dst" ] && [ ! -L "$dst" ] && cmp -s "$src" "$dst"; then
+        return 0
+    fi
 
+    # Back up anything in the way, including symlinks from older installs.
+    if [ -e "$dst" ] || [ -L "$dst" ]; then
         mkdir -p "$backup_dir/$(dirname "${dst#$HOME/}")"
         mv "$dst" "$backup_dir/${dst#$HOME/}"
     fi
 
-    ln -s "$src" "$dst"
+    cp -p "$src" "$dst"
 }
 
-link_dotfiles() {
-    section "Linking dotfiles"
+copy_dotfiles() {
+    section "Copying dotfiles"
 
     while IFS= read -r -d '' file; do
         case "${file#$repo_dir/}" in
@@ -560,16 +596,16 @@ link_dotfiles() {
                 continue
                 ;;
         esac
-        link_file "$file"
+        copy_file "$file"
     done < <(find "$repo_dir" -type f -print0)
 
-    ok "Dotfiles linked"
+    ok "Dotfiles copied"
 }
 
-link_missing_dotfiles() {
-    local file dst linked=0
+copy_missing_dotfiles() {
+    local file dst copied=0
 
-    section "Linking missing dotfiles"
+    section "Copying missing dotfiles"
 
     while IFS= read -r -d '' file; do
         case "${file#$repo_dir/}" in
@@ -579,16 +615,21 @@ link_missing_dotfiles() {
         esac
 
         dst="$HOME/${file#$repo_dir/}"
-        if [ -e "$dst" ] || [ -L "$dst" ]; then
+        # Skip if a real copy is already there; replace leftover symlinks.
+        if [ -e "$dst" ] && [ ! -L "$dst" ]; then
             continue
         fi
 
         mkdir -p "$(dirname "$dst")"
-        ln -s "$file" "$dst"
-        linked=$((linked + 1))
+        if [ -L "$dst" ]; then
+            mkdir -p "$backup_dir/$(dirname "${dst#$HOME/}")"
+            mv "$dst" "$backup_dir/${dst#$HOME/}"
+        fi
+        cp -p "$file" "$dst"
+        copied=$((copied + 1))
     done < <(find "$repo_dir" -type f -print0)
 
-    ok "Linked $linked missing dotfiles"
+    ok "Copied $copied missing dotfiles"
 }
 
 write_hypr_single_monitor() {
@@ -706,6 +747,10 @@ configure_hypr_monitors() {
             info "Leaving Hyprland monitor config unchanged"
             ;;
     esac
+
+    # Sync the generated monitor/wallpaper files into the installed copies.
+    copy_file "$repo_dir/.config/hypr/configs/monitors.conf"
+    copy_file "$repo_dir/.config/hypr/hyprpaper.conf"
 }
 
 activate_desktop_settings() {
@@ -718,6 +763,49 @@ activate_desktop_settings() {
     else
         warn "gsettings not available; GTK files are still linked"
     fi
+}
+
+install_browser_policies() {
+    local src_dir="$repo_dir/.config/chromium/policies/managed"
+    local files=("$src_dir"/*.json)
+
+    [ -e "${files[0]}" ] || {
+        warn "No browser policy files found; skipping"
+        return 0
+    }
+
+    section "Installing browser policies (saved extensions + privacy)"
+
+    # Chromium-family policy dirs: Chrome, Chromium, Brave.
+    local dest
+    for dest in /etc/opt/chrome/policies/managed /etc/chromium/policies/managed /etc/brave/policies/managed; do
+        sudo mkdir -p "$dest"
+        sudo install -m 644 "${files[@]}" "$dest"/
+    done
+
+    ok "Saved extensions + privacy hardening applied to Chrome/Chromium/Brave"
+}
+
+install_zen_policies() {
+    local src="$repo_dir/.config/zen/policies/policies.json"
+    [ -f "$src" ] || {
+        warn "No Zen policy found; skipping"
+        return 0
+    }
+
+    # Zen is Firefox-based: policies live in <install-dir>/distribution/policies.json.
+    local zen_bin zen_dir
+    zen_bin="$(command -v zen-browser 2>/dev/null || command -v zen 2>/dev/null || true)"
+    [ -n "$zen_bin" ] || {
+        warn "Zen not on PATH yet; skipping Zen extension policy"
+        return 0
+    }
+
+    zen_dir="$(dirname "$(readlink -f "$zen_bin")")"
+    section "Installing Zen (Firefox) extension policy"
+    sudo mkdir -p "$zen_dir/distribution"
+    sudo install -m 644 "$src" "$zen_dir/distribution/policies.json"
+    ok "Zen will install Proton Pass on next launch ($zen_dir/distribution)"
 }
 
 install_normal_packages() {
@@ -733,6 +821,24 @@ install_hacking_packages() {
     install_pipx_packages "$repo_dir/packages/pipx-hacking.txt" "hacking"
 }
 
+install_laptop_packages() {
+    install_pacman_packages "$repo_dir/packages/pacman-laptop.txt" "laptop"
+}
+
+configure_laptop() {
+    section "Laptop power, thermal, and bluetooth services"
+    enable_systemd_service "power-profiles-daemon.service"
+    enable_systemd_service "thermald.service"
+    enable_systemd_service "bluetooth.service"
+    enable_systemd_service "acpid.service"
+    ok "Laptop services enabled"
+}
+
+laptop_setup() {
+    install_laptop_packages
+    configure_laptop
+}
+
 fix_missing_essentials() {
     install_missing_pacman_packages "$repo_dir/packages/pacman-essential.txt" "normal"
     install_missing_aur_packages "$repo_dir/packages/aur-essential.txt" "normal"
@@ -740,7 +846,7 @@ fix_missing_essentials() {
     install_missing_npm_packages "$repo_dir/packages/npm.txt" "normal"
     configure_system_access
     fix_executable_bits
-    link_missing_dotfiles
+    copy_missing_dotfiles
 }
 
 package_menu() {
@@ -778,23 +884,197 @@ package_menu() {
     done
 }
 
+configure_npm_prefix() {
+    command -v npm >/dev/null 2>&1 || return 0
+
+    local prefix="$HOME/.local"
+    mkdir -p "$prefix/bin"
+
+    # Install global npm packages into a user-writable prefix so no root is needed.
+    if [ "$(npm config get prefix 2>/dev/null)" != "$prefix" ]; then
+        npm config set prefix "$prefix" >/dev/null 2>&1 || warn "Could not set npm prefix to $prefix"
+    fi
+
+    case ":$PATH:" in
+        *":$prefix/bin:"*) ;;
+        *) export PATH="$prefix/bin:$PATH" ;;
+    esac
+}
+
+ensure_claude_code() {
+    if command -v claude >/dev/null 2>&1; then
+        ok "Claude Code CLI found"
+        return 0
+    fi
+
+    if command -v npm >/dev/null 2>&1; then
+        configure_npm_prefix
+        info "Installing @anthropic-ai/claude-code (no root)"
+        npm install -g @anthropic-ai/claude-code || warn "Could not install Claude Code CLI"
+    else
+        warn "npm not available; cannot install Claude Code CLI"
+    fi
+
+    command -v claude >/dev/null 2>&1
+}
+
+bootstrap_pai() {
+    section "Setting up PAI (Personal AI Infrastructure)"
+
+    command -v git >/dev/null 2>&1 || {
+        warn "git missing; skipping PAI setup"
+        return 0
+    }
+
+    if [ -d "$pai_src_dir/.git" ]; then
+        info "Updating PAI checkout in $pai_src_dir"
+        git -C "$pai_src_dir" pull --ff-only || warn "Could not update PAI checkout"
+    else
+        info "Cloning PAI from $pai_repo_url"
+        mkdir -p "$(dirname "$pai_src_dir")"
+        git clone --depth 1 "$pai_repo_url" "$pai_src_dir" || {
+            warn "Could not clone PAI"
+            return 0
+        }
+    fi
+
+    if [ -f "$pai_src_dir/PAI-Install/install.sh" ]; then
+        info "Running PAI installer (populates ~/.claude, skills, Algorithm)"
+        bash "$pai_src_dir/PAI-Install/install.sh" || warn "PAI installer reported an error"
+        ok "PAI setup finished"
+    else
+        warn "PAI installer not found at $pai_src_dir/PAI-Install/install.sh"
+    fi
+}
+
+setup_caveman() {
+    section "Installing caveman (default communication mode)"
+
+    ensure_claude_code || {
+        warn "Claude Code CLI unavailable; skipping caveman"
+        return 0
+    }
+
+    info "Adding caveman marketplace ($caveman_marketplace)"
+    claude plugin marketplace add "$caveman_marketplace" >/dev/null 2>&1 \
+        || info "caveman marketplace already configured"
+
+    info "Installing caveman plugin"
+    claude plugin install caveman@caveman >/dev/null 2>&1 \
+        || info "caveman plugin already installed"
+
+    claude plugin enable caveman@caveman >/dev/null 2>&1 || true
+
+    mkdir -p "$HOME/.claude"
+    printf 'full\n' > "$HOME/.claude/.caveman-active"
+    ok "caveman installed and enabled by default (level: full)"
+}
+
+setup_claude_ai() {
+    section "Setting up Claude AI (PAI + skills + caveman)"
+    ensure_claude_code || warn "Claude Code CLI not installed yet"
+    bootstrap_pai
+    setup_caveman
+    ok "Claude AI setup complete"
+}
+
+detect_gpu_vendor() {
+    command -v lspci >/dev/null 2>&1 || return 1
+
+    local gpu
+    gpu="$(lspci -nn 2>/dev/null | grep -iE 'vga|3d|display')"
+
+    if printf '%s' "$gpu" | grep -qi 'nvidia'; then
+        printf 'nvidia\n'
+    elif printf '%s' "$gpu" | grep -qiE 'amd|ati|radeon'; then
+        printf 'amd\n'
+    elif printf '%s' "$gpu" | grep -qi 'intel'; then
+        printf 'intel\n'
+    else
+        return 1
+    fi
+}
+
+detect_cpu_ucode() {
+    if grep -qi 'AuthenticAMD' /proc/cpuinfo 2>/dev/null; then
+        printf 'amd-ucode\n'
+    elif grep -qi 'GenuineIntel' /proc/cpuinfo 2>/dev/null; then
+        printf 'intel-ucode\n'
+    fi
+}
+
+configure_gpu() {
+    command -v pacman >/dev/null 2>&1 || {
+        warn "pacman unavailable; skipping GPU drivers"
+        return 0
+    }
+
+    section "Graphics drivers (AMD / Intel / NVIDIA)"
+
+    local detected choice
+    detected="$(detect_gpu_vendor || true)"
+    [ -n "$detected" ] && info "Detected GPU vendor: $detected"
+
+    printf '\n'
+    printf '  %s1%s  AMD    (vulkan-radeon)\n' "$bold" "$reset"
+    printf '  %s2%s  Intel  (vulkan-intel)\n' "$bold" "$reset"
+    printf '  %s3%s  NVIDIA (proprietary: nvidia-dkms)\n' "$bold" "$reset"
+    printf '  %s4%s  Skip\n' "$bold" "$reset"
+    printf '\n'
+    read -r -p "Choose GPU vendor [default: ${detected:-amd}]: " choice
+    choice="${choice:-${detected:-amd}}"
+
+    # Shared userspace + 32-bit bits for steam.
+    local pkgs=(mesa lib32-mesa vulkan-icd-loader lib32-vulkan-icd-loader)
+    case "$choice" in
+        amd|1)    pkgs+=(vulkan-radeon lib32-vulkan-radeon) ;;
+        intel|2)  pkgs+=(vulkan-intel lib32-vulkan-intel) ;;
+        nvidia|3) pkgs+=(nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings linux-headers) ;;
+        *)        info "Skipping GPU driver install"; return 0 ;;
+    esac
+
+    # CPU microcode is independent of the GPU vendor — detect it separately.
+    local ucode
+    ucode="$(detect_cpu_ucode)"
+    [ -n "$ucode" ] && pkgs+=("$ucode")
+
+    enable_multilib_repo
+    section "Installing graphics drivers"
+    sudo pacman -Syu --needed "${pkgs[@]}" || warn "Some GPU packages failed to install"
+    ok "GPU drivers installed (regenerate initramfs/bootloader if microcode/NVIDIA is new)"
+}
+
 recommended_desktop_setup() {
     install_normal_packages
+    configure_gpu
+    if confirm "Is this a laptop? add power, thermal, and bluetooth tooling" "n"; then
+        laptop_setup
+    fi
     configure_system_access
     fix_executable_bits
-    link_dotfiles
     configure_hypr_monitors
+    copy_dotfiles
     activate_desktop_settings
+    install_browser_policies
+    install_zen_policies
+    setup_claude_ai
 }
 
 full_setup() {
     install_normal_packages
     install_hacking_packages
+    configure_gpu
+    if confirm "Is this a laptop? add power, thermal, and bluetooth tooling" "n"; then
+        laptop_setup
+    fi
     configure_system_access
     fix_executable_bits
-    link_dotfiles
     configure_hypr_monitors
+    copy_dotfiles
     activate_desktop_settings
+    install_browser_policies
+    install_zen_policies
+    setup_claude_ai
 }
 
 check_passes=0
@@ -1057,6 +1337,7 @@ check_dotfiles() {
     check_package_file "packages/pipx.txt" "normal pipx"
     check_package_file "packages/npm.txt" "normal npm"
     check_package_file "packages/pacman-hacking.txt" "hacking pacman"
+    check_package_file "packages/pacman-laptop.txt" "laptop pacman"
     check_package_file "packages/aur-hacking.txt" "hacking AUR"
     check_package_file "packages/pipx-hacking.txt" "hacking pipx"
 
@@ -1119,32 +1400,64 @@ main_menu() {
         printf '      normal setup plus security, Android, and firmware tools\n'
         printf '  %s3%s  Package menu\n' "$bold" "$reset"
         printf '      install normal/hacking pacman, AUR, pipx, or npm sets separately\n'
-        printf '  %s4%s  Link dotfiles only\n' "$bold" "$reset"
+        printf '  %s4%s  Copy dotfiles only\n' "$bold" "$reset"
         printf '  %s5%s  Configure Hyprland monitors only\n' "$bold" "$reset"
         printf '  %s6%s  Apply dark mode and icon theme only\n' "$bold" "$reset"
         printf '  %s7%s  Fix missing essentials\n' "$bold" "$reset"
         printf '      install absent normal packages/tools and repair shell, groups, services, permissions\n'
-        printf '  %s8%s  Exit\n' "$bold" "$reset"
+        printf '  %s8%s  Laptop setup (power, thermal, bluetooth)\n' "$bold" "$reset"
+        printf '  %s9%s  Exit\n' "$bold" "$reset"
         printf '\n'
-        read -r -p "Choose [1-8]: " choice
+        read -r -p "Choose [1-9]: " choice
 
         case "$choice" in
             1) recommended_desktop_setup; finish_message; return 0 ;;
             2) full_setup; finish_message; return 0 ;;
             3) package_menu ;;
-            4) link_dotfiles; finish_message; return 0 ;;
+            4) copy_dotfiles; finish_message; return 0 ;;
             5) configure_hypr_monitors; finish_message; return 0 ;;
             6) activate_desktop_settings; finish_message; return 0 ;;
             7) fix_missing_essentials; finish_message; return 0 ;;
-            8) info "No changes made"; return 0 ;;
+            8) laptop_setup; finish_message; return 0 ;;
+            9) info "No changes made"; return 0 ;;
             *) warn "Invalid choice"; pause ;;
         esac
     done
 }
 
+update_repo() {
+    command -v git >/dev/null 2>&1 || return 0
+    [ -d "$repo_dir/.git" ] || return 0
+    git -C "$repo_dir" remote get-url origin >/dev/null 2>&1 || return 0
+
+    section "Updating dotfiles from upstream"
+    local before after
+    before="$(git -C "$repo_dir" rev-parse HEAD 2>/dev/null || true)"
+
+    if git -C "$repo_dir" pull --ff-only; then
+        after="$(git -C "$repo_dir" rev-parse HEAD 2>/dev/null || true)"
+        if [ "$before" != "$after" ]; then
+            ok "Updated dotfiles to ${after:0:12}"
+            if [ -z "${DOTFILES_REEXEC:-}" ]; then
+                info "Restarting installer with the updated version"
+                export DOTFILES_REEXEC=1
+                exec bash "$repo_dir/install.sh" "$@"
+            fi
+        else
+            ok "Already up to date"
+        fi
+    else
+        warn "Could not fast-forward pull; continuing with local version"
+    fi
+}
+
 main() {
     if [ ! -f /etc/arch-release ]; then
         warn "This installer targets Arch-based systems."
+    fi
+
+    if [ "${1:-}" != "--check" ]; then
+        update_repo "$@"
     fi
 
     if [ "${1:-}" = "--check" ]; then
@@ -1166,6 +1479,12 @@ main() {
 
     if [ "${1:-}" = "--fix-missing" ]; then
         fix_missing_essentials
+        finish_message
+        return 0
+    fi
+
+    if [ "${1:-}" = "--laptop" ]; then
+        laptop_setup
         finish_message
         return 0
     fi

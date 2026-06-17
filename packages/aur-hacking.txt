@@ -1,16 +1,21 @@
-android-emulator
-android-studio
-apktool
+# ── Web / recon ──
 amass
 assetfinder
+subfinder
+ffuf
+kiterunner-bin
+nuclei
+seclists
 burpsuite
 caido-desktop
-ffuf
-firmware-mod-kit
-kiterunner-bin
 ngrok
-nuclei
-saleae-logic2
-seclists
-subfinder
-uefitool-bin
+
+# ── Android / mobile (commented out for now) ──
+#apktool
+#android-emulator
+#android-studio
+
+# ── IoT / firmware / hardware (commented out — revisit for IoT work) ──
+#firmware-mod-kit
+#uefitool-bin
+#saleae-logic2

@@ -1,6 +1,9 @@
-androguard
-apkid
-frida-tools
-objection
+# ── Exploit dev ──
 pwntools
 ropper
+
+# ── Android / mobile (commented out for now) ──
+#androguard
+#apkid
+#frida-tools
+#objection

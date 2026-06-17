@@ -44,8 +44,9 @@ temp_c() {
     fi
 }
 
-cpu_hwmon=$(hwmon_by_name k10temp)
-gpu_hwmon=$(hwmon_by_name amdgpu)
+# AMD: k10temp / amdgpu — Intel: coretemp / i915. Try AMD first, fall back to Intel.
+cpu_hwmon=$(hwmon_by_name k10temp || hwmon_by_name coretemp)
+gpu_hwmon=$(hwmon_by_name amdgpu || hwmon_by_name i915)
 
 cpu_load=$(cpu_usage)
 cpu_tctl=$(temp_c "$cpu_hwmon/temp1_input")

@@ -123,12 +123,11 @@
         }
     },
     "backlight": {
-        "device": "amdgpu_bl1",
         "format": "{icon} {percent}%",
         "format-icons": ["󰛩", "󱩎", "󱩏", "󱩐", "󱩑", "󱩒", "󱩓", "󱩔", "󱩕", "󱩖", "󰛨"],
-        "on-scroll-up": "brightnessctl --device=amdgpu_bl1 set 5%+",
-        "on-scroll-down": "brightnessctl --device=amdgpu_bl1 set 5%-",
-        "on-click": "brightnessctl --device=amdgpu_bl1 set 50%",
+        "on-scroll-up": "brightnessctl set 5%+",
+        "on-scroll-down": "brightnessctl set 5%-",
+        "on-click": "brightnessctl set 50%",
         "min-length": 6,
         "scroll-step": 5,
         "spacing": 8,
@@ -148,7 +147,8 @@
         "format-disconnected": "󰤮 Offline",
         "format-alt": "{icon} {bandwidthDownBits}",
         "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
-        "on-click": "ghostty -e nmtui"
+        "on-click": "nmcli radio wifi | grep -q enabled && nmcli radio wifi off || nmcli radio wifi on",
+        "on-click-right": "ghostty -e nmtui"
     },
 
     // Sound Module

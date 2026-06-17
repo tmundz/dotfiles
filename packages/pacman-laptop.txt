@@ -1,0 +1,7 @@
+# Laptop power, thermal, and peripheral tooling.
+power-profiles-daemon
+thermald
+acpid
+upower
+brightnessctl
+blueman
